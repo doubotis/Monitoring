@@ -1,0 +1,1 @@
+<h1 class="page-header"><span class="glyphicon glyphicon-signal"></span> Analytics</h1>

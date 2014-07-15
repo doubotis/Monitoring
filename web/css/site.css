@@ -1,0 +1,111 @@
+/* 
+ * Copyright (C) 2014 Christophe
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.thumbnail-logo
+{
+    height: 40px;
+    float: left;
+    position: relative;
+    top: 6px;
+    margin-right: 10px;
+    padding: 3px;
+}
+
+.big-logo
+{
+    width: 100%;
+}
+
+.table-controls
+{
+    float: right;
+    position: relative;
+    top: 15px;
+}
+
+.form-limited
+{
+    max-width: 800px;
+}
+
+.alert-float
+{
+    position: fixed;
+    width: 40%;
+    left: 50%;
+    z-index: 999999999;
+    transform: translateX(-50%) translatey(-50%);
+    -webkit-transform: translateX(-50%) translatey(-50%);
+    -ms-transform: translateX(-50%) translatey(-50%);
+    -moz-transform: translateX(-50%) translatey(-50%);
+}
+
+.exception-label
+{
+    /* display: inline; */
+    padding: .5em .5em .5em;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #fff;
+    /* text-align: center; */
+    vertical-align: baseline;
+    border-radius: .25em;
+    /* width: 0px; */
+    display: inline-block;
+}
+
+.nav-sidebar>.active>a>.badge {
+    color: #428bca;
+    background-color: #fff;
+}
+
+@media (max-width: 1000px)
+{
+    .navbar-header-hideable
+    {
+        display: none;
+    }
+}
+
+@media (min-width: 1000px)
+{
+    .navbar-header
+    {
+        min-width: 350px;
+    }
+}
+
+.nav-bar-category
+{
+    font-weight: bold;
+    color: gray;
+    padding: 10px 15px;
+}
+
+.project-selector
+{
+    padding-left: 10px;
+    padding-right: 10px;
+    width: 100%;
+}
+
+.project-selector button
+{
+    width: 100%;
+    text-align: left;
+}
