@@ -21,6 +21,8 @@
 define('WEBAPP_DIR', '/var/www/monitoring.fr/src/');
 // define smarty lib directory
 define('SMARTY_DIR', '/usr/local/lib/php/smarty/');
+// define plugin directory
+define('PLUGIN_DIR', '/var/www/monitoring.fr/plugins/');
 // include the setup script
 include(WEBAPP_DIR . 'setup.php');
 

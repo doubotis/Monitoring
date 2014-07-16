@@ -17,21 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// define our application directory
-define('WEBAPP_DIR', '/var/www/monitoring.fr/src/');
-// define smarty lib directory
-define('SMARTY_DIR', '/usr/local/lib/php/smarty/');
-// define plugin directory
-define('PLUGIN_DIR', '/var/www/monitoring.fr/plugins/');
-// include the setup script
-include(WEBAPP_DIR . 'setup.php');
-
-// Create the ActionScript object.
-$actionScript = new ActionScript();
-
-// Get Query.
-$action = isset($_REQUEST["a"]) ? $_REQUEST["a"] : "nothing";
-
-$actionScript->executeAction($action, $_REQUEST);
-
-?>
+function startsWith($haystack, $needle)
+{
+    return $needle === "" || strpos($haystack, $needle) === 0;
+}
+function endsWith($haystack, $needle)
+{
+    return $needle === "" || substr($haystack, -strlen($needle)) === $needle;
+}

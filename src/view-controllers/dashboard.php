@@ -55,6 +55,10 @@ class DashboardController {
                 $this->assignCategoryAlarms($tpl);
                 $tpl->display('controller_dashboard.tpl');
                 break;
+            case 'logs':
+                $this->assignCategoryLogs($tpl);
+                $tpl->display('controller_dashboard.tpl');
+                break;
             default:
                 $tpl->assign('view', 'view_dashboard_' . $category);
                 $tpl->display('controller_dashboard.tpl');
@@ -128,16 +132,30 @@ class DashboardController {
         }
         else if ($action == "add")
         {
-            $item = array("id" => -1, "name" => "", "descr" => "", "enabled" => 1, "control_type" => 0, "control_code" => "", alarm_id => 1);
+            $item = array("id" => -1, "name" => "", "descr" => "", "enabled" => 1, "control_type" => "", "control_code" => "", "alarm_id" => 1);
             
             // Request for alarms
             $sth = $this->pdo->prepare("SELECT id, name FROM alarms");
             $sth->execute();
             $alarms = $sth->fetchAll();
             
+            // Request for controls
+            $pm = new PluginManager(PluginManager::PLUGIN_TYPE_CONTROL);
+            $plugins = $pm->getPlugins();
+            
+            // Request current control
+            $key = array_keys($plugins);
+            $key = $key[0];
+            $plugin = $plugins[$key];
+            $ffh = new FieldFormHelper();
+            $ffh->putFields($plugin->loadForm());
+            $subformHtml = $ffh->getHTML();
+            
             $tpl->assign('action', $action);
             $tpl->assign('item', $item);
             $tpl->assign('alarms_data', $alarms);
+            $tpl->assign('controls_data', $plugins);
+            $tpl->assign('subform_html', $subformHtml);
             $tpl->assign('view', 'view_dashboard_controllers_form');
         }
         else if ($action == "edit")
@@ -152,9 +170,22 @@ class DashboardController {
              $sth->execute();
             $alarms = $sth->fetchAll();
             
+             // Request for controls
+            $pm = new PluginManager(PluginManager::PLUGIN_TYPE_CONTROL);
+            $plugins = $pm->getPlugins();
+            
+            // Request current control
+            $plugin = $pm->getPlugin($item["control_type"]);
+            $plugin->loadConfig($item["control_code"]);
+            $ffh = new FieldFormHelper();
+            $ffh->putFields($plugin->loadForm());
+            $subformHtml = $ffh->getHTML();
+            
             $tpl->assign('action', $action);
             $tpl->assign('item', $item);
             $tpl->assign('alarms_data', $alarms);
+            $tpl->assign('controls_data', $plugins);
+            $tpl->assign('subform_html', $subformHtml);
             $tpl->assign('view', 'view_dashboard_controllers_form');
         }
     }
@@ -189,6 +220,12 @@ class DashboardController {
             $tpl->assign('item', $item);
             $tpl->assign('view', 'view_dashboard_alarms_form');
         }
+    }
+    
+    function assignCategoryLogs($tpl)
+    {
+        $pm = new PluginManager(PluginManager::PLUGIN_TYPE_CONTROL);
+        $tpl->assign('view', 'view_dashboard_logs');
     }
 }
 

@@ -27,11 +27,11 @@ define('PLUGIN_DIR', '/var/www/monitoring.fr/plugins/');
 include(WEBAPP_DIR . 'setup.php');
 
 // Create the ActionScript object.
-$actionScript = new ActionScript();
+$ajaxScript = new AjaxScript();
 
 // Get Query.
-$action = isset($_REQUEST["a"]) ? $_REQUEST["a"] : "nothing";
+$query = isset($_REQUEST["q"]) ? $_REQUEST["q"] : "nothing";
 
-$actionScript->executeAction($action, $_REQUEST);
+$ajaxScript->executeQuery($query, $_REQUEST);
 
 ?>

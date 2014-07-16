@@ -99,13 +99,30 @@ class SecurityManager
     function checkSecurity()
     {
         if (!$this->isAuthorized())
-            throw new SecurityException("Forbiden Access");
+            throw new SecurityException("Forbiden Request");
     }
     
     function isAuthorized()
     {
         if (in_array(SECURITY_MANAGER_VISITOR, $this->allowed))
             return true;        // All is authorized
+        
+        $isAdmin = false;
+        
+        // Get user id
+        $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_AUTH_DBNAME . "";
+        $pdo =  new PDO($dsn,DB_AUTH_USERNAME, DB_AUTH_PASSWORD);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+                
+        $sth = $pdo->prepare("SELECT * FROM users WHERE id = ? AND rights LIKE 'admin'");
+        $sth->execute(array($_SESSION["user_id"]));
+        $res = $sth->fetchAll();
+        if (count($res) > 0)
+            $isAdmin = true;
+        
+        if (in_array(SECURITY_MANAGER_MASK_ADMIN, $this->allowed) && $isAdmin == true)
+                return true;
         
         if (in_array(SECURITY_MANAGER_MASK_BOT, $this->allowed) && isCrawler($_SERVER['HTTP_USER_AGENT']))
             return true;

@@ -17,21 +17,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// define our application directory
-define('WEBAPP_DIR', '/var/www/monitoring.fr/src/');
-// define smarty lib directory
-define('SMARTY_DIR', '/usr/local/lib/php/smarty/');
-// define plugin directory
-define('PLUGIN_DIR', '/var/www/monitoring.fr/plugins/');
-// include the setup script
-include(WEBAPP_DIR . 'setup.php');
+class TrueControlDescriptor implements AbstractPluginControlDescriptor
+{
+    public function __construct()
+    {
+        
+    }
+    
+    public function pluginName()
+    {
+        return "Toujours Vrai - Retourne TRUE à tous les tests";
+    }
+    
+    public function loadConfig($configCode)
+    {
+        
+    }
+    
+    public function storeConfig()
+    {
+        return "";
+    }
+    
+    public function loadForm()
+    {
+        return null;
+    }
+    
+    public function storeForm($array)
+    {
+        
+    }    
 
-// Create the ActionScript object.
-$actionScript = new ActionScript();
+    public function testControl()
+    {
+        return true;
+    }
 
-// Get Query.
-$action = isset($_REQUEST["a"]) ? $_REQUEST["a"] : "nothing";
-
-$actionScript->executeAction($action, $_REQUEST);
-
-?>
+}

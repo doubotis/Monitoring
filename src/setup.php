@@ -19,6 +19,7 @@
 
 require_once(WEBAPP_DIR . 'dispatcher.php');
 require_once(WEBAPP_DIR . 'action-script.php');
+require_once(WEBAPP_DIR . 'ajax-script.php');
 require(SMARTY_DIR . 'Smarty.class.php');
 
 // smarty configuration

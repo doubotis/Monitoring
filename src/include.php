@@ -24,6 +24,11 @@ require_once('view-controllers/help.php');
 require_once('view-controllers/login.php');
 
 require_once('managers/security.php');
+require_once('managers/plugin.php');
+
+require_once('extern/abstract-plugin-descriptor.php');
+require_once('extern/abstract-plugin-control-descriptor.php');
+require_once('extern/field-form-helper.php');
 
 require_once('exceptions/security.php');
 
@@ -39,5 +44,6 @@ require_once('data/historic.php');
 require_once('utils/utils-security.php');
 require_once('utils/utils-sessions.php');
 require_once('utils/utils-http.php');
+require_once('utils/utils-string.php');
 
 ?>

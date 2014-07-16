@@ -27,7 +27,7 @@ class AuthProcess
         $this->pdo = $pdo;
         $this->sm = new SecurityManager();
         $this->sm->allowAll();
-        $this->sm->checkSecurity();
+        //$this->sm->checkSecurity();
     }
     
     function login($user, $password)

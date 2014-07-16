@@ -92,12 +92,14 @@ class ActionScript
                     break;
                 case ACTION_CONTROLLER_ADD:
                     $cp = new ControllerProcess($this->pdo);
-                    $cp->add($request["name"], $request["descr"], $request["state"], $request["type"], $request["code"], $request["alarm_id"]);
+                    $others = $this->__clearReservedParams($request);
+                    $cp->add($request["name"], $request["descr"], $request["state"], $request["type"], $request["alarm_id"], $others);
                     exit(0);
                     break;
                 case ACTION_CONTROLLER_EDIT:
                     $cp = new ControllerProcess($this->pdo);
-                    $cp->edit($request["id"], $request["name"], $request["descr"], $request["state"], $request["type"], $request["code"], $request["alarm_id"]);
+                    $others = $this->__clearReservedParams($request);
+                    $cp->edit($request["id"], $request["name"], $request["descr"], $request["state"], $request["type"], $request["alarm_id"], $others);
                     exit(0);
                     break;
                 case ACTION_ALARM_ADD:
@@ -181,6 +183,21 @@ class ActionScript
         unset($value);
         
         return $newArray;
+    }
+    
+    private function __clearReservedParams($arr)
+    {
+        $finalArray = array();
+        $forbiddenArrays = array("v", "id", "a", "name", "descr", "state", "alarm_id", "type", "origin");
+        
+        $keys = array_keys($arr);
+        for ($i=0; $i < count($keys); $i++)
+        {
+            if (!in_array($keys[$i], $forbiddenArrays))
+                $finalArray[$keys[$i]] = $arr[$keys[$i]];
+        }
+        
+        return $finalArray;
     }
 }
 
