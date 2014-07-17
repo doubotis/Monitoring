@@ -36,8 +36,6 @@
 
 <p><img src="https://raw.githubusercontent.com/doubotis/Monitoring/master/docs/monitoring-sample.png" alt="alt tag"></p>
 
-<h1></h1>
-
 <h2>
 <a name="introduction" class="anchor" href="#introduction"><span class="octicon octicon-link"></span></a>Introduction</h2>
 
@@ -45,20 +43,24 @@
 The application includes several systems, as :</p>
 
 <ul>
+<li>Projects</li>
 <li>Controllers</li>
 <li>Alarms</li>
 <li>Alerts</li>
 <li>Logs</li>
 <li>Shorcuts</li>
-<li>Users</li>
-<li>Permissions</li>
-<li>Projects</li>
+<li>Users, Permissions, Roles</li>
 <li>Administration</li>
-<li>Plugin Technology</li>
-</ul><h2>
-<a name="controllers" class="anchor" href="#controllers"><span class="octicon octicon-link"></span></a>Controllers</h2>
+<li>Daemon Checking Process</li>
+</ul><h3>
+<a name="projects" class="anchor" href="#projects"><span class="octicon octicon-link"></span></a>Projects</h3>
 
-<p>A controller is a control the application does every X minutes. It's defining something to control. If the control fails as describing in the Control Type, an alert is triggered.</p>
+<p>Many systems must be monitored? You can split them into several projects and allow users to manage some projects with a great system of roles and permissions.</p>
+
+<h3>
+<a name="controllers" class="anchor" href="#controllers"><span class="octicon octicon-link"></span></a>Controllers</h3>
+
+<p>A controller is a control the application does every X minutes. It's defining something to control. If the control fails as describing in the Control Type, an alert is triggered, by using an alarm definition.</p>
 
 <p>A controller can control with different cases :</p>
 
@@ -67,7 +69,52 @@ The application includes several systems, as :</p>
 <li>Result set of a database query</li>
 <li>Body Answer of HTTP request</li>
 <li>...</li>
-</ul><p>The manner to control is featured with plugin technology, so adding new control types is simple. Want to check the presence of a process inside UNIX ? Code it and let's rock.</p>
+</ul><p>The Control Types are managed by a mechanism of plugins, so adding new Control Types is simple. Want to check the presence of a process inside UNIX ? Code it and let's rock.</p>
+
+<h3>
+<a name="alarms" class="anchor" href="#alarms"><span class="octicon octicon-link"></span></a>Alarms</h3>
+
+<p>An alarm is the definition of what a controller must do when it fails. A controller is attached to an alarm. When a controller fails, the controller uses the alarm to trigger an alert. An alarm can define many things like the gravity of the failure and if the system must send an email or a SMS on trigger.</p>
+
+<h3>
+<a name="alerts" class="anchor" href="#alerts"><span class="octicon octicon-link"></span></a>Alerts</h3>
+
+<p>An alert is the core part of what the Monitoring system do. An alert is created by a controller when it fails. They are shown in the Dashboard Overview and in the top navigation bar. An alert can be seen by all members of a project. When a user want handle the alert, he can mark the alert as "Taken in charge".</p>
+
+<h3>
+<a name="logs" class="anchor" href="#logs"><span class="octicon octicon-link"></span></a>Logs</h3>
+
+<p>Great logging mechanism with stacktrace, allowing you to find specifically what is the problem in your infrastructure. Logs are shown in the Logs part of the web application. Logs are used in alert descriptions to help to solve your problems.</p>
+
+<h3>
+<a name="shorcuts" class="anchor" href="#shorcuts"><span class="octicon octicon-link"></span></a>Shorcuts</h3>
+
+<p>Shortcuts are used to simplify complex actions that are redundant in your infrastructure, like restart two services because of a piece of software in the second service that needs the second service to be restarted.
+Actions are based of a mechanism of plugins, so adding new Actions is simple. As for Control Types, code it and let's rock.
+Shortcuts are very dangerous is wrongly used so restart containers without checking, so use it carrefully.</p>
+
+<h3>
+<a name="users-permissions-roles" class="anchor" href="#users-permissions-roles"><span class="octicon octicon-link"></span></a>Users, Permissions, Roles</h3>
+
+<p>Users are grouped in roles with permissions splitted by projects. Administrator and Super-Adminitrator could move users and edit roles to belong to your infrastructure and human resources.</p>
+
+<h3>
+<a name="daemon-checking-process" class="anchor" href="#daemon-checking-process"><span class="octicon octicon-link"></span></a>Daemon Checking Process</h3>
+
+<p>The crucial and core part of the Monitoring System is how it handle controls. A daemon process is launched and hosted as a service. When launched, the daemon process splits into 3 daemon child process that will check the controllers as defined in the Controller tab. Each child process is always checking for the health of others daemon childs, as the control process never end.
+If the database is not available, the processes will trigger an alert and will send themselves SMS and mails to Super-Administrator users.</p>
+
+<h2>
+<a name="install" class="anchor" href="#install"><span class="octicon octicon-link"></span></a>Install</h2>
+
+<ul>
+<li>
+<strong>Dependencies:</strong> PHP5, SQL database, Cron.</li>
+<li>Tested on Unix Platform Debian.</li>
+<li>Only in <strong>French</strong> for the moment.</li>
+<li>
+<strong>Still in development</strong>.</li>
+</ul><p>Just put the complete GitHub project on your server in /var/www/ then browse to see the install page. Follow the instructions to install greatfully the Monitoring system.</p>
         </section>
 
         <footer>
