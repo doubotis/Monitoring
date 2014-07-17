@@ -1,6 +1,6 @@
 Monitoring
 ==========
-![alt tag](https://raw.githubusercontent.com/doubotis/Monitoring/master/.docs/monitoring-sample.png)
+![alt tag](https://raw.githubusercontent.com/doubotis/Monitoring/master/docs/monitoring-sample.png)
 
 ==========
 
