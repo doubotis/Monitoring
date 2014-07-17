@@ -41,7 +41,7 @@ Great logging mechanism with stacktrace, allowing you to find specifically what 
 ###Shorcuts
 Shortcuts are used to simplify complex actions that are redundant in your infrastructure, like restart two services because of a piece of software in the second service that needs the second service to be restarted.
 Actions are based of a mechanism of plugins, so adding new Actions is simple. As for Control Types, code it and let's rock.
-Shortcuts are very dangerous is wrongly used so restart containers without checking, so use it carrefully.
+Shortcuts are very dangerous if wrongly used. For instance restart containers without checking what happening could be dangerous. So use it carrefully!
 
 ###Users, Permissions, Roles
 Users are grouped in roles with permissions splitted by projects. Administrator and Super-Adminitrator could move users and edit roles to belong to your infrastructure and human resources.
