@@ -75,7 +75,10 @@ class ActionScript
     
     function executeAction($action, $request)
     {
-        $origin = $_REQUEST["origin"];
+        $origin = "";
+        if (isset($_REQUEST["origin"]))
+            $origin = $_REQUEST["origin"];
+        
         $request = $this->sanitizeRequest($_REQUEST);
         
         try
@@ -93,13 +96,13 @@ class ActionScript
                 case ACTION_CONTROLLER_ADD:
                     $cp = new ControllerProcess($this->pdo);
                     $others = $this->__clearReservedParams($request);
-                    $cp->add($request["name"], $request["descr"], $request["state"], $request["type"], $request["alarm_id"], $others);
+                    $cp->add($request["name"], $request["descr"], $request["state"], $request["strict"], $request["type"], $request["alarm_id"], $others);
                     exit(0);
                     break;
                 case ACTION_CONTROLLER_EDIT:
                     $cp = new ControllerProcess($this->pdo);
                     $others = $this->__clearReservedParams($request);
-                    $cp->edit($request["id"], $request["name"], $request["descr"], $request["state"], $request["type"], $request["alarm_id"], $others);
+                    $cp->edit($request["id"], $request["name"], $request["descr"], $request["state"], $request["strict"], $request["type"], $request["alarm_id"], $others);
                     exit(0);
                     break;
                 case ACTION_ALARM_ADD:
@@ -188,7 +191,7 @@ class ActionScript
     private function __clearReservedParams($arr)
     {
         $finalArray = array();
-        $forbiddenArrays = array("v", "id", "a", "name", "descr", "state", "alarm_id", "type", "origin");
+        $forbiddenArrays = array("v", "id", "a", "name", "descr", "state", "strict", "alarm_id", "type", "origin");
         
         $keys = array_keys($arr);
         for ($i=0; $i < count($keys); $i++)

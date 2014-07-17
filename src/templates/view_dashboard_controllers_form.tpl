@@ -29,10 +29,17 @@
     <label class="col-md-4 control-label" for="state">Etat :</label>
     <div class="col-md-4">
         <div class="checkbox">
-            <label for="state-0">
-                <input type="checkbox" name="state" id="state-0" value="1" {{if $item.enabled eq 1}}checked="checked"{{/if}}>
+            <label for="state">
+                <input type="checkbox" name="state" id="state" value="1" {{if $item.enabled eq 1}}checked="checked"{{/if}}>
                 Activé
             </label>
+        </div>
+        <div class="checkbox">
+            <label for="strict">
+                <input type="checkbox" name="strict" id="strict" value="1" {{if $item.strict eq 1}}checked="checked"{{/if}}>
+                Mode Strict 
+            </label>
+                <a href="javascript:void(0)" class="btn-sm popover-dismiss" data-container="body" data-toggle="popover" title="Mode Strict" data-content="Si cette option est activée et que le contrôle échoue, une alerte sera directement déclenchée. Autrement, le contrôleur effectuera un second contrôle avant de déclencher une alerte."><span class="glyphicon glyphicon-question-sign"></span> Qu'est-ce que c'est ?</a>
         </div>
     </div>
 </div>
@@ -84,6 +91,14 @@
 </form>
         
         <script type="text/javascript">
+        
+        $(document).on("ready", function()
+        {
+            $('.popover-dismiss').popover({
+            trigger: 'click hover'
+            })
+        });
+        
     
     function changeSubForm()
     {

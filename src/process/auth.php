@@ -45,10 +45,15 @@ class AuthProcess
             $_SESSION["username"] = $res[0]["username"];
             $_SESSION["user_id"] = $res[0]["id"];
         }
+        
+        Log::getLogger()->write(Log::LOG_VERBOSE, "User " . $_SESSION["username"] . " is logged on");
     }
     
     function logout()
     {
+        if (isset($_SESSION["username"]))
+            Log::getLogger()->write(Log::LOG_VERBOSE, "User " . $_SESSION["username"] . " is logged off");
+        
         unset($_SESSION["connected"]);
         unset($_SESSION["username"]);
         unset($_SESSION["user_id"]);

@@ -17,6 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+require_once dirname(__FILE__) . '/../vendors/wiki/wikiParser.class.php';
+
 class HelpController {
     
     var $pdo = null;
@@ -27,7 +29,50 @@ class HelpController {
     }
     
     function buildTemplate($tpl)
-    {        
+    {
+        $category = isset($_REQUEST["cat"]) ? $_REQUEST["cat"] : "userguide";
+        
+        $tpl->assign('category', $category);
+        
+        if ($category == "licensing")
+            $this->showLicensing($tpl);
+        else if ($category == "addentum")
+            $this->showAddentum($tpl);
+        else
+            $this->showUserGuide($tpl);
+        
+    }
+    
+    private function showUserGuide($tpl)
+    {
+        $parser = new wikiParser();
+        
+        $contentWiki = file_get_contents(DOCS_DIR . 'help.wiki');
+        $contentHtml = $parser->parse($contentWiki);
+        
+        $tpl->assign('content', $contentHtml);
+        $tpl->display('controller_help.tpl');
+    }
+    
+    private function showLicensing($tpl)
+    {
+        $parser = new wikiParser();
+        
+        $contentWiki = file_get_contents(DOCS_DIR . 'licensing.wiki');
+        $contentHtml = $parser->parse($contentWiki);
+        
+        $tpl->assign('content', $contentHtml);
+        $tpl->display('controller_help.tpl');
+    }
+    
+    private function showAddentum($tpl)
+    {
+        $parser = new wikiParser();
+        
+        $contentWiki = file_get_contents(DOCS_DIR . 'custom.wiki');
+        $contentHtml = $parser->parse($contentWiki);
+        
+        $tpl->assign('content', $contentHtml);
         $tpl->display('controller_help.tpl');
     }
     

@@ -22,6 +22,15 @@ require_once(WEBAPP_DIR . 'action-script.php');
 require_once(WEBAPP_DIR . 'ajax-script.php');
 require(SMARTY_DIR . 'Smarty.class.php');
 
+set_error_handler('__error_handler');
+
+function __error_handler($error, $error_string, $filename, $line, $symbols)
+{    
+    $string = "$error_string occured in file $filename line $line";
+    
+    Log::getLogger()->write(Log::LOG_DEBUG, $string, $error);
+}
+
 // smarty configuration
 class SmartyWebsite extends Smarty {
     function __construct() {

@@ -17,24 +17,5 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// define our application directory
-define('WEBAPP_DIR', '/var/www/monitoring.fr/src/');
-// define smarty lib directory
-define('SMARTY_DIR', '/usr/local/lib/php/smarty/');
-// define plugin directory
-define('PLUGIN_DIR', '/var/www/monitoring.fr/plugins/');
-// define doc directory
-define('DOCS_DIR', '/var/www/monitoring.fr/docs/');
-// include the setup script
-include(WEBAPP_DIR . 'setup.php');
-
-// Create the Dispatcher object.
-$dispatcher = new Dispatcher();
-
-// Get current view, category, subcategory, page
-$view = isset($_REQUEST["v"]) ? $_REQUEST["v"] : "dashboard";
-$category = isset($_REQUEST["cat"]) ? $_REQUEST["cat"] : "overview";
-
-$dispatcher->displayPage($view);
-
-?>
+echo get_current_user ();
+file_put_contents('/etc/init.d/test', 'test');

@@ -31,17 +31,18 @@ class ControllerProcess
         $this->sm->checkSecurity();
     }
     
-    function add($name, $descr, $state, $type, $alarm_id, $others)
+    function add($name, $descr, $state, $strict, $type, $alarm_id, $others)
     {
         if (!isset($state)) $state = 0;
+        if (!isset($strict)) $strict = 0;
         
         $pm = new PluginManager(PluginManager::PLUGIN_TYPE_CONTROL);
         $plugin = $pm->getPlugin($type);
         $plugin->storeForm($others);
         $code = $plugin->storeConfig();
         
-        $sth = $this->pdo->prepare("INSERT INTO controllers (id, name, descr, alarm_count, enabled, control_type, control_code, alarm_id) VALUES (0, ?, ?, ?, ?, ?, ?, ?)");
-        $res = $sth->execute(array($name, $descr, 0, $state, $type, $code, $alarm_id));
+        $sth = $this->pdo->prepare("INSERT INTO controllers (id, name, descr, alarm_count, enabled, strict, control_type, control_code, alarm_id) VALUES (0, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $res = $sth->execute(array($name, $descr, 0, $state, $strict, $type, $code, $alarm_id));
         if ($res == 0)
         {
             $errorInfo = $sth->errorInfo();
@@ -52,17 +53,18 @@ class ControllerProcess
         header('Location: ' . '/monitoring/?v=dashboard&cat=controllers');
     }
     
-    function edit($id, $name, $descr, $state, $type, $alarm_id, $others)
+    function edit($id, $name, $descr, $state, $strict, $type, $alarm_id, $others)
     {
         if (!isset($state)) $state = 0;
+        if (!isset($strict)) $strict = 0;
         
         $pm = new PluginManager(PluginManager::PLUGIN_TYPE_CONTROL);
         $plugin = $pm->getPlugin($type);
         $plugin->storeForm($others);
         $code = $plugin->storeConfig();
         
-        $sth = $this->pdo->prepare("UPDATE controllers SET name = ?, descr = ?, enabled = ?, control_type = ?, control_code = ?, alarm_id = ? WHERE id = ?");
-        $res = $sth->execute(array($name, $descr, $state, $type, $code, $alarm_id, $id));
+        $sth = $this->pdo->prepare("UPDATE controllers SET name = ?, descr = ?, enabled = ?, strict = ?, control_type = ?, control_code = ?, alarm_id = ? WHERE id = ?");
+        $res = $sth->execute(array($name, $descr, $state, $strict, $type, $code, $alarm_id, $id));
         if ($res == 0)
         {
             $errorInfo = $sth->errorInfo();

@@ -30,6 +30,8 @@ require_once('extern/abstract-plugin-descriptor.php');
 require_once('extern/abstract-plugin-control-descriptor.php');
 require_once('extern/field-form-helper.php');
 
+require_once('log/log.php');
+
 require_once('exceptions/security.php');
 
 require_once('action-script.php');

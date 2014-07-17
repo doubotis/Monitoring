@@ -38,7 +38,7 @@
                   <li {{if $category eq "advanced"}} class="active" {{/if}}><a href="?v=dashboard&cat=advanced"><span class="fa fa-gear"></span> Paramètres avancés</a></li>
                 </ul>
             </div>
-          <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" style="height: 100%;">
             {{include file="$view.tpl"}}
           </div>
         </div>

@@ -132,7 +132,7 @@ class DashboardController {
         }
         else if ($action == "add")
         {
-            $item = array("id" => -1, "name" => "", "descr" => "", "enabled" => 1, "control_type" => "", "control_code" => "", "alarm_id" => 1);
+            $item = array("id" => -1, "name" => "", "descr" => "", "enabled" => 1, "strict" => 0, "control_type" => "", "control_code" => "", "alarm_id" => 1);
             
             // Request for alarms
             $sth = $this->pdo->prepare("SELECT id, name FROM alarms");
@@ -160,7 +160,7 @@ class DashboardController {
         }
         else if ($action == "edit")
         {
-            $sth = $this->pdo->prepare("SELECT id, name, descr, enabled, control_type, control_code, alarm_id FROM controllers WHERE id = ?");
+            $sth = $this->pdo->prepare("SELECT id, name, descr, enabled, strict, control_type, control_code, alarm_id FROM controllers WHERE id = ?");
             $sth->execute(array($_REQUEST["id"]));
             $res = $sth->fetch(PDO::FETCH_ASSOC);
             $item = $res;
@@ -224,7 +224,12 @@ class DashboardController {
     
     function assignCategoryLogs($tpl)
     {
-        $pm = new PluginManager(PluginManager::PLUGIN_TYPE_CONTROL);
+        $logs = Log::getLogger()->tail(100);
+        
+        $logs = preg_replace("/[\r\n]/", "<br/>", $logs);
+        $logs = str_replace('\t', "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;", $logs);
+        
+        $tpl->assign('logs', $logs);
         $tpl->assign('view', 'view_dashboard_logs');
     }
 }

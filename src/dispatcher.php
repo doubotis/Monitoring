@@ -129,6 +129,7 @@ class Dispatcher {
         } catch (SecurityException $se)
         {
             // A Security Exception is more generic so display a message.
+            Log::getLogger()->write(Log::LOG_ALERT, "Security Exception dropped on dispatcher", $se);
             $_SESSION["message"] = array("type" => "danger", "title" => "Erreur", "descr" => $se->getMessage());
             $this->tpl->assign('message', $_SESSION["message"]);
             unset($_SESSION["message"]);
@@ -136,6 +137,7 @@ class Dispatcher {
             
         } catch (Exception $e)
         {
+            Log::getLogger()->write(Log::LOG_ERROR, "Unknown Exception dropped on dispatcher", $e);
             // A very generic exception.
             $_SESSION["message"] = array("type" => "danger", "title" => "Erreur", "descr" => $e->getMessage());
                 $this->tpl->assign('message', $_SESSION["message"]);

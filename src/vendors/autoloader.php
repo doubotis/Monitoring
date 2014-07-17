@@ -17,24 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// define our application directory
-define('WEBAPP_DIR', '/var/www/monitoring.fr/src/');
-// define smarty lib directory
-define('SMARTY_DIR', '/usr/local/lib/php/smarty/');
-// define plugin directory
-define('PLUGIN_DIR', '/var/www/monitoring.fr/plugins/');
-// define doc directory
-define('DOCS_DIR', '/var/www/monitoring.fr/docs/');
-// include the setup script
-include(WEBAPP_DIR . 'setup.php');
+set_include_path(implode(PATH_SEPARATOR, array(
+    realpath(dirname(__FILE__)),
+    realpath(dirname(__FILE__) . 'php-daemon/Core'),
+    realpath(dirname(__FILE__) . 'php-daemon/scripts'),
+    get_include_path(),
+)));
 
-// Create the Dispatcher object.
-$dispatcher = new Dispatcher();
+function __autoload($class_name)
+{
+    $class_name = str_replace('\\', '/', $class_name);
+    $class_name = str_replace('_', '/', $class_name);
+    require_once "$class_name.php";
+}
 
-// Get current view, category, subcategory, page
-$view = isset($_REQUEST["v"]) ? $_REQUEST["v"] : "dashboard";
-$category = isset($_REQUEST["cat"]) ? $_REQUEST["cat"] : "overview";
-
-$dispatcher->displayPage($view);
-
-?>
+function __pathify($class_name) {
+    return str_replace("_", "/", $class_name) . ".php";
+}

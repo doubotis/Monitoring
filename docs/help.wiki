@@ -1,0 +1,9 @@
+= Bienvenue =
+----
+
+Bienvenue dans cette présentation du programme de Monitoring. La suite de la page vous donne un maximum d'informations qui pourraient vous servir
+lors de la configuration, l'installation et le paramétrage de votre application de Monitoring.
+
+=== Contrôleurs ===
+
+Les contrôleurs '''servent le principe de base du Monitoring'''. Chaque contrôleur définit quelque chose à contrôler. Il est possible de faire des groupes de contrôleurs et de personnaliser chacun des comportements du contrôleur au cas où le test de celui-ci s'avèrerait erroné. Il est par exemple possible de configurer quelles alarmes se déclencheront, en fonction de la gravité de la panne.
