@@ -75,7 +75,6 @@ class ActionScript
     
     function executeAction($action, $request)
     {
-        $origin = "";
         if (isset($_REQUEST["origin"]))
             $origin = $_REQUEST["origin"];
         
