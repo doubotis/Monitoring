@@ -55,6 +55,7 @@ If the database is not available, the processes will trigger an alert and will s
 * Tested on Unix Platform Debian.
 * Only in **French** for the moment.
 * **Still in development**.
+* Easy-Intall feature not available for the moment.
 
 Just put the complete GitHub project on your server in /var/www/ then browse to see the install page. Follow the instructions to install greatfully the Monitoring system.
 
