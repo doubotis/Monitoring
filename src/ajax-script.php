@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once('config/config.php');
 require_once('include.php');
 
 // Define ajax scripts.
@@ -46,16 +45,15 @@ class AjaxScript
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 
-            // Check if logged.
-            session_start();
-            if (isset($_SESSION))
-                $connected = true;
-
         } catch (PDOException $e)
         {
-            print "Error!: " . $e->getMessage();
-            die();
+            
         }
+        
+        // Check if logged.
+        session_start();
+        if (isset($_SESSION))
+            $connected = true;
     }
     
     function executeQuery($action, $request)

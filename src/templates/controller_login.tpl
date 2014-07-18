@@ -6,7 +6,7 @@
             <img src="images/geol-logo.png" class="big-logo"/>
             <h2 class="form-signin-heading">Monitoring</h2>
             <input type="hidden" name="origin" value="{{$url}}">
-            <input type="email" name="u" class="form-control" placeholder="Identifiant" required="" autofocus="">
+            <input type="text" name="u" class="form-control" placeholder="Identifiant" required="" autofocus="">
             <input type="password" name="p" class="form-control" placeholder="Mot de passe" required="">
             <div class="checkbox">
               <label>

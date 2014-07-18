@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once('config/config.php');
 require_once('include.php');
 
 // Define action scripts.
@@ -38,6 +37,8 @@ define('ACTION_ALARM_EDIT', 'editalarm');
 define('ACTION_ALARM_REMOVE', 'removealarm');
 
 define('ACTION_ALERT_EDIT', 'editalert');
+
+define('ACTION_ADMIN_CONFIG', 'adminconfig');
 
 define('ACTION_NONE', 'nothing');
 
@@ -61,16 +62,15 @@ class ActionScript
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 
-            // Check if logged.
-            session_start();
-            if (isset($_SESSION))
-                $connected = true;
-
         } catch (PDOException $e)
         {
-            print "Error!: " . $e->getMessage();
-            die();
+            
         }
+        
+        // Check if logged.
+        session_start();
+        if (isset($_SESSION))
+            $connected = true;
     }
     
     function executeAction($action, $request)
@@ -140,6 +140,11 @@ class ActionScript
                 case ACTION_USER_REMOVE:
                     $up = new UserProcess($this->pdo);
                     $up->remove($request["id"]);
+                    break;
+                case ACTION_ADMIN_CONFIG:
+                    $ac = new AdminProcess($this->pdo);
+                    $ac->setup($request["db-host"], $request["db-username"], $request["db-password"], $request["db-name"], 
+                            $request["control-threads"], $request["control-interval"]);
                     break;
                 case ACTION_NONE:
                 default:

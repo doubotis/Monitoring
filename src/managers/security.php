@@ -109,28 +109,39 @@ class SecurityManager
         
         $isAdmin = false;
         
-        // Get user id
-        $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_AUTH_DBNAME . "";
-        $pdo =  new PDO($dsn,DB_AUTH_USERNAME, DB_AUTH_PASSWORD);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-                
-        $sth = $pdo->prepare("SELECT * FROM users WHERE id = ? AND rights LIKE 'admin'");
-        $sth->execute(array($_SESSION["user_id"]));
-        $res = $sth->fetchAll();
-        if (count($res) > 0)
-            $isAdmin = true;
-        
-        if (in_array(SECURITY_MANAGER_MASK_ADMIN, $this->allowed) && $isAdmin == true)
+        try
+        {
+            // Get user id
+            $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_AUTH_DBNAME . "";
+            $pdo =  new PDO($dsn,DB_AUTH_USERNAME, DB_AUTH_PASSWORD);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+
+            $sth = $pdo->prepare("SELECT * FROM users WHERE id = ? AND rights LIKE 'admin'");
+            $sth->execute(array($_SESSION["user_id"]));
+            $res = $sth->fetchAll();
+            if (count($res) > 0)
+                $isAdmin = true;
+
+            if (in_array(SECURITY_MANAGER_MASK_ADMIN, $this->allowed) && $isAdmin == true)
+                    return true;
+
+            if (in_array(SECURITY_MANAGER_MASK_BOT, $this->allowed) && isCrawler($_SERVER['HTTP_USER_AGENT']))
                 return true;
-        
-        if (in_array(SECURITY_MANAGER_MASK_BOT, $this->allowed) && isCrawler($_SERVER['HTTP_USER_AGENT']))
-            return true;
-        
-        if (in_array(SECURITY_MANAGER_MASK_LOGGED, $this->allowed) && isset($_SESSION["connected"]))
-            return true;
-        
-        return false;
+
+            if (in_array(SECURITY_MANAGER_MASK_LOGGED, $this->allowed) && isset($_SESSION["connected"]))
+                return true;
+
+            return false;
+        }
+        catch (Exception $e)
+        {
+            // If the database could not be accessed test if this is the superadmin.
+            if ($_SESSION["username"] == AC_SUPERADMIN_USERNAME)
+                return true;
+            else
+                return false;
+        }
     }
     
     function isCrawler($USER_AGENT)

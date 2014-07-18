@@ -9,7 +9,7 @@
 </p>
 
 <span class="table-controls">
-    <a href="?v=dashboard&cat=alarms&a=add" class="btn btn-primary">Ajouter</a>
+    <a href="?v=dashboard&cat=alarms&a=add" class="btn btn-primary"><span class="fa fa-plus"></span> Ajouter</a>
 </span>
 <h2 class="sub-header">Liste des alarmes</h2>
 

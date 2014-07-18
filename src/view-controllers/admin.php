@@ -32,9 +32,40 @@ class AdminController {
     }
     
     function buildTemplate($tpl)
-    {        
-        $tpl->display('controller_admin.tpl');
+    {
+        $tab = isset($_REQUEST["tab"]) ? $_REQUEST["tab"] : "users";
+        $tpl->assign('tab', $tab);
+        
+        switch ($tab)
+        {
+            case 'config':
+                $this->assignTabConfig($tpl);
+                $tpl->display('controller_admin.tpl');
+                break;
+            default:
+                $tpl->assign('view', 'view_admin_' . $tab);
+                $tpl->display('controller_admin.tpl');
+                break;
+        }
     }
+    
+    function assignTabConfig($tpl)
+    {
+        // Build an array for the config.
+        $control = array(   "host" => DB_HOST,
+                            "username" => DB_AUTH_USERNAME,
+                            "password" => DB_AUTH_PASSWORD,
+                            "dbName" => DB_AUTH_DBNAME,
+                            
+                            "controlThreads" => AC_CONTROL_THREADS,
+                            "controlInterval" => AC_CONTROL_FREQUENCY
+                        );
+        
+        $tpl->assign('config', $control);
+        $tpl->assign('view', 'view_admin_config');
+    }
+    
+    
     
 }
 

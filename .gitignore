@@ -214,3 +214,5 @@ pip-log.txt
 #Mr Developer
 .mr.developer.cfg
 src/config/config.php
+/config/admin-config.ini
+!/.log/

@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once('config/config.php');
 require_once('include.php');
 
 // Define controllers.
@@ -50,16 +49,15 @@ class Dispatcher {
             $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_AUTH_DBNAME . "";
             $this->pdo =  new PDO($dsn,DB_AUTH_USERNAME, DB_AUTH_PASSWORD);
             
-            // Check if logged.
-            session_start();
-            if (isset($_SESSION))
-                $connected = true;
-            
         } catch (PDOException $e)
         {
-            print "Error!: " . $e->getMessage();
-            die();
+            
         }
+        
+        // Check if logged.
+        session_start();
+        if (isset($_SESSION))
+            $connected = true;
 
         // instantiate the template object
         $this->tpl = new SmartyWebsite();
@@ -77,11 +75,22 @@ class Dispatcher {
             unset($_SESSION["message"]);
         }
         
-        $sth = $this->pdo->prepare("SELECT COUNT(alerts.id) AS c FROM alerts WHERE resolved = 0");
-        $sth->execute();
-        $countAlerts = $sth->fetch(PDO::FETCH_ASSOC);
-        $countAlerts = $countAlerts["c"];
-        $this->tpl->assign('countAlerts', $countAlerts);
+        try
+        {
+            if (isset($this->pdo))
+            {
+                $sth = $this->pdo->prepare("SELECT COUNT(alerts.id) AS c FROM alerts WHERE resolved = 0");
+                $sth->execute();
+                $countAlerts = $sth->fetch(PDO::FETCH_ASSOC);
+                $countAlerts = $countAlerts["c"];
+                $this->tpl->assign('countAlerts', $countAlerts);
+            }
+            
+        } catch (Exception $e)
+        {
+            Log::getLogger()->write(Log::LOG_ERROR, "Unable to request DB", $e);
+            $this->tpl->assign('countAlerts', 0);
+        }
         
         try
         {

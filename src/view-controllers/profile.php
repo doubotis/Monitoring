@@ -33,6 +33,9 @@ class ProfileController {
     
     function buildTemplate($tpl)
     {
+        if (!isset($this->pdo))
+            throw new Exception("Database not connected");
+        
         $sth = $this->pdo->prepare("SELECT * FROM users WHERE users.id = ?");
         $sth->execute(array($_SESSION["user_id"]));
         $res = $sth->fetch(PDO::FETCH_ASSOC);

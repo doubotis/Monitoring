@@ -36,6 +36,9 @@ class DashboardController {
         $category = isset($_REQUEST["cat"]) ? $_REQUEST["cat"] : "overview";
         $tpl->assign('category', $category);
         
+        if (!isset($this->pdo))
+            throw new Exception("Database not connected");
+        
         switch ($category)
         {
             

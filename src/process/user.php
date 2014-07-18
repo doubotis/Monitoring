@@ -24,6 +24,9 @@ class UserProcess
     function __construct($pdo)
     {
         $this->pdo = $pdo;
+        
+        if (!isset($this->pdo))
+            throw new Exception("Database not connected");
     }
     
     function register($username, $email, $email_active, $phone, $phone_active, $password, $new_password)

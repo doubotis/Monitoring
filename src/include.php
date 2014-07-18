@@ -17,12 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+require_once('config/config-init.php');
+
 require_once('view-controllers/dashboard.php');
 require_once('view-controllers/admin.php');
 require_once('view-controllers/profile.php');
 require_once('view-controllers/help.php');
 require_once('view-controllers/login.php');
 
+require_once('managers/config.php');
 require_once('managers/security.php');
 require_once('managers/plugin.php');
 
@@ -40,6 +43,7 @@ require_once('process/controller.php');
 require_once('process/alarm.php');
 require_once('process/alert.php');
 require_once('process/user.php');
+require_once('process/admin.php');
 
 require_once('data/historic.php');
 

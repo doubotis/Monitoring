@@ -24,6 +24,9 @@ class AlertProcess
     function __construct($pdo)
     {
         $this->pdo = $pdo;
+        
+        if (!isset($this->pdo))
+            throw new Exception("Database not connected");
     }
     
     function add($name, $type, $code, $mail, $sms)

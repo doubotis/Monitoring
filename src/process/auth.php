@@ -33,17 +33,36 @@ class AuthProcess
     function login($user, $password)
     {
         $sha1Password = sha1($password);
-        $sth = $this->pdo->prepare("SELECT * FROM users WHERE USERNAME LIKE ? AND password LIKE ?");
-        $sth->execute(array($user, $sha1Password));
-        $res = $sth->fetchAll();
-        if (count($res) <= 0)
-            throw new Exception("Identifiant ou mot de passe incorrect.");
+        
+        if (!isset($this->pdo))
+        {
+            // We verify just if this is the superadmin user.
+            if (AC_SUPERADMIN_USERNAME == $user && AC_SUPERADMIN_PASSWORD == $sha1Password)
+            {
+                $_SESSION["message"] = array("type" => "success", "title" => "Connexion terminée", "descr" => "Vous êtes maintenant connecté");
+                $_SESSION["connected"] = true;
+                $_SESSION["username"] = AC_SUPERADMIN_USERNAME;
+                $_SESSION["user_id"] = 0;
+                header('Location: ' . '/monitoring/?v=admin&tab=config');
+                exit(0);
+            }
+            else
+                throw new Exception("Lorsque la base de données est déconnectée, seul le compte SuperAdmin peut être utilisé.");
+        }
         else
         {
-            $_SESSION["message"] = array("type" => "success", "title" => "Connexion terminée", "descr" => "Vous êtes maintenant connecté");
-            $_SESSION["connected"] = true;
-            $_SESSION["username"] = $res[0]["username"];
-            $_SESSION["user_id"] = $res[0]["id"];
+            $sth = $this->pdo->prepare("SELECT * FROM users WHERE USERNAME LIKE ? AND password LIKE ?");
+            $sth->execute(array($user, $sha1Password));
+            $res = $sth->fetchAll();
+            if (count($res) <= 0)
+                throw new Exception("Identifiant ou mot de passe incorrect.");
+            else
+            {
+                $_SESSION["message"] = array("type" => "success", "title" => "Connexion terminée", "descr" => "Vous êtes maintenant connecté");
+                $_SESSION["connected"] = true;
+                $_SESSION["username"] = $res[0]["username"];
+                $_SESSION["user_id"] = $res[0]["id"];
+            }
         }
         
         Log::getLogger()->write(Log::LOG_VERBOSE, "User " . $_SESSION["username"] . " is logged on");
