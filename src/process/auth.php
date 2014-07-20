@@ -51,7 +51,7 @@ class AuthProcess
         }
         else
         {
-            $sth = $this->pdo->prepare("SELECT * FROM users WHERE USERNAME LIKE ? AND password LIKE ?");
+            $sth = $this->pdo->prepare("SELECT * FROM users WHERE USERNAME LIKE ? AND password LIKE ? AND active = 1");
             $sth->execute(array($user, $sha1Password));
             $res = $sth->fetchAll();
             if (count($res) <= 0)
@@ -66,6 +66,8 @@ class AuthProcess
         }
         
         Log::getLogger()->write(Log::LOG_VERBOSE, "User " . $_SESSION["username"] . " is logged on");
+        header('Location: ' . '/monitoring/?v=dashboard');
+        exit(0);
     }
     
     function logout()

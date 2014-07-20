@@ -38,6 +38,10 @@ define('ACTION_ALARM_REMOVE', 'removealarm');
 
 define('ACTION_ALERT_EDIT', 'editalert');
 
+define('ACTION_ROLE_ADD', 'addrole');
+define('ACTION_ROLE_EDIT', 'editrole');
+define('ACTION_ROLE_REMOVE', 'removerole');
+
 define('ACTION_ADMIN_CONFIG', 'adminconfig');
 
 define('ACTION_NONE', 'nothing');
@@ -139,11 +143,32 @@ class ActionScript
                     $up->edit($request["id"], $request["username"], $request["email"], $request["email-active"], 
                             $request["phone"], $request["phone-active"], $request["current-password"], 
                             $request["new-password"], $request["retape-password"]);
-                    exit(0);
                     break;
                 case ACTION_USER_REMOVE:
                     $up = new UserProcess($this->pdo);
                     $up->remove($request["id"]);
+                    break;
+                case ACTION_USER_REMOVE:
+                    $up = new UserProcess($this->pdo);
+                    $up->remove($request["id"]);
+                    exit(0);
+                    break;
+                case ACTION_ROLE_ADD:
+                    $rp = new RoleProcess($this->pdo);
+                    $others = $this->__preparePermissions($request);
+                    $rp->add($request["name"], $others);
+                    exit(0);
+                    break;
+                case ACTION_ROLE_EDIT:
+                    $rp = new RoleProcess($this->pdo);
+                    $others = $this->__preparePermissions($request);
+                    $rp->edit($request["id"], $request["name"], $others);
+                    exit(0);
+                    break;
+                case ACTION_ROLE_REMOVE:
+                    $rp = new RoleProcess($this-pdo);
+                    $others = $this->__preparePermissions($request);
+                    $rp->remove($request["id"], $request["next_role_id"]);
                     exit(0);
                     break;
                 case ACTION_ADMIN_CONFIG:
@@ -212,6 +237,24 @@ class ActionScript
         }
         
         return $finalArray;
+    }
+    
+    private function __preparePermissions($arr)
+    {
+        $newArr = array();
+        $keys = array_keys($arr);
+        for ($i=0; $i < count($keys); $i++)
+        {
+            $key = $keys[$i];
+            
+            if (startsWith($key, "perm_"))
+            {
+                $key = str_replace("_", ".", $key);
+                array_push($newArr, $key);
+            }
+        }
+        
+        return $newArr;
     }
 }
 

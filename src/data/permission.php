@@ -21,7 +21,7 @@ class Permission
 {
     // Constants
     const PERMISSION_ACCESS_ADMIN = "perm.access.admin";
-    const PERMISSION_ACCESS_SUPERADMIN = "perm.access.superadmin";
+    
     const PERMISSION_ACCESS_DASHBOARD_OVERVIEW = "perm.access.dashboard.overview";
     const PERMISSION_ACCESS_DASHBOARD_ALERTS = "perm.access.dashboard.alerts";
     const PERMISSION_ACCESS_DASHBOARD_LOGS = "perm.access.dashboard.logs";
@@ -31,27 +31,65 @@ class Permission
     const PERMISSION_ACCESS_DASHBOARD_SHORTCUTS = "perm.access.dashboard.shortcuts";
     const PERMISSION_ACCESS_DASHBOARD_ALARMS = "perm.access.dashboard.alarms";
     const PERMISSION_ACCESS_DASHBOARD_USERS = "perm.access.dashboard.users";
-    const PERMISSION_ACCESS_DASHBOARD_PERMS = "perm.access.dashboard.perms";
     const PERMISSION_ACCESS_DASHBOARD_ADVANCED = "perm.access.dashboard.advanced";
     
-    const PERMISSION_PROJECT_CREATE = "perm.project.create";
-    const PERMISSION_PROJECT_EDIT = "perm.project.edit";
-    const PERMISSION_PROJECT_DELETE = "perm.project.delete";
-    
-    const PERMISSION_USERS_CREATE = "perm.users.create";
-    const PERMISSION_USERS_EDIT = "perm.users.edit";
-    const PERMISSION_USERS_DELETE = "perm.users.delete";
+    const PERMISSION_CONTROLLERS_ADD = "perm.controllers.create";
+    const PERMISSION_CONTROLLERS_EDIT = "perm.controllers.edit";
+    const PERMISSION_CONTROLLERS_DELETE = "perm.controllers.delete";
+    const PERMISSION_ALERTS_MANAGE = "perm.alerts.manage";
+    const PERMISSION_SHORTCUTS_CREATE = "perm.shortcuts.create";
+    const PERMISSION_SHORTCUTS_EDIT = "perm.shortcuts.edit";
+    const PERMISSION_SHORTCUTS_DELETE = "perm.shortcuts.delete";
+    const PERMISSION_ALARMS_CREATE = "perm.alarms.create";
+    const PERMISSION_ALARMS_EDIT = "perm.alarms.edit";
+    const PERMISSION_ALARMS_DELETE = "perm.alarms.delete";
+    const PERMISSION_ADVANCED_MANAGE = "perm.advanced.manage";
     
     // Variables
+    var $descrs = array();
     
     function __construct()
     {
+        // Build descriptions
+        $this->descrs[Permission::PERMISSION_ACCESS_ADMIN] = "Donne accès au panneau d'Administrateur. Déverouille automatiquement toutes les autres permissions pour tous les projets.";
+        $this->descrs[Permission::PERMISSION_ACCESS_DASHBOARD_OVERVIEW] = "Donne accès à l'Aperçu du Dashboard. Permet de visualiser les alertes en cours et les statistiques global d'un projet.";
+        $this->descrs[Permission::PERMISSION_ACCESS_DASHBOARD_ALERTS] = "Donne accès à la liste des alertes. Permet de visualiser les alertes en cours et l'historique des alertes d'un projet.";
+        $this->descrs[Permission::PERMISSION_ACCESS_DASHBOARD_LOGS] = "Donne accès au log d'un projet.";
+        $this->descrs[Permission::PERMISSION_ACCESS_DASHBOARD_ANALYTICS] = "Donne accès aux statistiques Analytics d'un projet.";
+        $this->descrs[Permission::PERMISSION_ACCESS_DASHBOARD_PROXMOX] = "Donne accès aux conteneurs Proxmox d'un projet.";
+        $this->descrs[Permission::PERMISSION_ACCESS_DASHBOARD_CONTROLLERS] = "Donne accès à la liste des contrôleurs d'un projet.";
+        $this->descrs[Permission::PERMISSION_ACCESS_DASHBOARD_SHORTCUTS] = "Donne accès à la liste des raccourcis d'un projet.";
+        $this->descrs[Permission::PERMISSION_ACCESS_DASHBOARD_ALARMS] = "Donne accès à la liste des alarmes d'un projet.";
+        $this->descrs[Permission::PERMISSION_ACCESS_DASHBOARD_USERS] = "Donne accès à la liste des utilisateurs d'un projet. Les utilisateurs n'étant pas affectés au projet donné ne sont pas listés.";
+        $this->descrs[Permission::PERMISSION_ACCESS_DASHBOARD_ADVANCED] = "Donne accès aux réglages avancés d'un projet.";
         
+        $this->descrs[Permission::PERMISSION_CONTROLLERS_ADD] = "Permet d'ajouter de nouveaux contrôleurs pour un projet.";
+        $this->descrs[Permission::PERMISSION_CONTROLLERS_EDIT] = "Permet de modifier les contrôleurs d'un projet.";
+        $this->descrs[Permission::PERMISSION_CONTROLLERS_DELETE] = "Permet de supprimer des contrôleurs d'un projet.";
+        $this->descrs[Permission::PERMISSION_ALERTS_MANAGE] = "Permet de gérer les alertes d'un projet";
+        $this->descrs[Permission::PERMISSION_SHORTCUTS_CREATE] = "Permet d'ajouter de nouveaux raccourcis d'un projet.";
+        $this->descrs[Permission::PERMISSION_SHORTCUTS_EDIT] = "Permet de modifier les raccourcis d'un projet.";
+        $this->descrs[Permission::PERMISSION_SHORTCUTS_DELETE] = "Permet de supprimer des raccourcis d'un projet.";
+        $this->descrs[Permission::PERMISSION_ALARMS_CREATE] = "Permet d'ajouter de nouvelles alarmes pour un projet.";
+        $this->descrs[Permission::PERMISSION_ALARMS_EDIT] = "Permet de modifier les alarmes d'un projet.";
+        $this->descrs[Permission::PERMISSION_ALARMS_DELETE] = "Permet de supprimer des alarmes d'un projet.";
+        $this->descrs[Permission::PERMISSION_ADVANCED_MANAGE] = "Permet de modifier les propriétés avancées d'un projet.";
     }
     
     function getPermissionsArray()
     {
+        $perms = array();
         $reflector = new ReflectionClass('Permission');
-        return $reflector->getConstants();
+        $arr = $reflector->getConstants();
+        $keys = array_keys($arr);
+        
+        for ($i=0; $i < count($keys); $i++)
+        {
+            $key = $keys[$i];
+            $value = $arr[$keys[$i]];
+            array_push($perms, array("name" => $value, "descr" => $this->descrs[$value]));
+        }
+        
+        return $perms;
     }
 }

@@ -60,7 +60,7 @@ class SecurityManager
     
     function allowAll()
     {
-        $allowed = array(SECURITY_MANAGER_VISITOR);
+        $allowed = array(SecurityManager::SECURITY_MANAGER_VISITOR);
     }
     
     function allow($kind)
@@ -114,7 +114,7 @@ class SecurityManager
                 $isAdmin = true;
             }
             
-            $sth = $pdo->prepare("SELECT * FROM users WHERE id = ? AND rights LIKE 'admin'");
+            $sth = $pdo->prepare("SELECT * FROM users WHERE id = ? AND rights LIKE '%admin%'");
             $sth->execute(array($_SESSION["user_id"]));
             $res = $sth->fetchAll();
             if (count($res) > 0)

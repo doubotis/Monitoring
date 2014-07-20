@@ -6,7 +6,6 @@
         
         <ul class="nav nav-tabs" role="tablist">
             <li {{if $tab eq 'users'}}class="active"{{/if}}><a href="?v=admin&tab=users">Utilisateurs</a></li>
-            <li {{if $tab eq 'permissions'}}class="active"{{/if}}><a href="?v=admin&tab=permissions">Permissions</a></li>
             <li {{if $tab eq 'roles'}}class="active"{{/if}}><a href="?v=admin&tab=roles">Rôles</a></li>
             <li {{if $tab eq 'projects'}}class="active"{{/if}}><a href="?v=admin&tab=projects">Projets</a></li>
             <li {{if $tab eq 'config'}}class="active"{{/if}}><a href="?v=admin&tab=config">Configuration</a></li>

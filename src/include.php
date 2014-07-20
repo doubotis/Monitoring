@@ -44,8 +44,10 @@ require_once('process/alarm.php');
 require_once('process/alert.php');
 require_once('process/user.php');
 require_once('process/admin.php');
+require_once('process/role.php');
 
 require_once('data/historic.php');
+require_once('data/permission.php');
 
 require_once('utils/utils-security.php');
 require_once('utils/utils-sessions.php');

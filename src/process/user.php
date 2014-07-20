@@ -72,12 +72,19 @@ class UserProcess
         header('Location: ' . '/monitoring/?v=admin');
     }
     
-    function edit($id, $username, $email, $email_active, $phone, $phone_active, $cur_password, $password, $new_password)
+    function edit($id, $username, $email, $email_active, $phone, $phone_active, $password)
     {
         $sm = new SecurityManager();
         $sm->denyAll();
-        $sm->allow(SECURITY_MANAGER_ADMIN);
+        $sm->allow(SecurityManager::SECURITY_MANAGER_MASK_ADMIN);
         $sm->checkSecurity();
+        
+        if ($id == -1)
+        {
+            $sm->denyAll();
+            $sm->allow(SecurityManager::SECURITY_MANAGER_SUPERADMIN);
+            $sm->checkSecurity();
+        }
         
         if (!isset($email_active)) $email_active = 0;
         if (!isset($phone_active)) $phone_active = 0;
@@ -85,11 +92,72 @@ class UserProcess
         if (isset($this->pdo))
         {
             // Get the old version
-            $sth = $this->pdo->prepare("SELECT * FROM users WHERE users.id = ?");
+            $sth = $this->pdo->prepare("SELECT * FROM users WHERE users.id = ? AND active = 1");
             $sth->execute(array($id));
             $res = $sth->fetch(PDO::FETCH_ASSOC);
             $user = $res;
+            
+            if ($user == null)
+                throw new Exception("Utilisateur introuvable");
 
+            // No need to change password, so let's go !
+            $sth = $this->pdo->prepare("UPDATE users SET username = ?, email = ?, email_active = ?, phone = ?, phone_active = ? WHERE id = ?");
+            $res = $sth->execute(array($username, $email, $email_active, $phone, $phone_active, $id));
+            if ($res == 0)
+                throw new Exception("Impossible de modifier votre profil.");
+
+            $_SESSION["message"] = array("type" => "success", "title" => "Modification d'utilisateur terminé", "descr" => "L'utilisateur a été modifié. Le mot de passe n'a PAS été modifié.");
+            if (isset($_REQUEST["origin"]))
+                header('Location: ' . $_REQUEST["origin"]);
+            else
+                header('Location: ' . '/monitoring/?v=dashboard&cat=users');
+        }
+        else
+        {
+            // Database not connected. Only for SuperAdmin.
+            if ($_SESSION["user_id"] != -1)
+                throw new Exception("Database not connected");
+        }
+    }
+    
+    function remove($id)
+    {
+        $sm = new SecurityManager();
+        $sm->denyAll();
+        $sm->allow(SecurityManager::SECURITY_MANAGER_MASK_ADMIN);
+        $sm->checkSecurity();
+        
+        if ($id == -1)
+            throw new SecuritySevereException("Could not delete the SuperAdmin");
+        
+        $sth = $this->pdo->prepare("UPDATE users SET active = 0 WHERE id = ?");
+        $res = $sth->execute(array($id));
+        if ($res == 0)
+            throw new Exception("Impossible de supprimer cet utilisateur.");
+        
+        if (isset($_REQUEST["origin"]))
+            header('Location: ' . $_REQUEST["origin"]);
+        else
+            header('Location: ' . '/monitoring/?v=dashboard&cat=users');
+        
+        
+    }
+    
+    function editprofile($username, $email, $email_active, $phone, $phone_active, $cur_password, $password, $new_password)
+    {
+        if (!isset($email_active)) $email_active = 0;
+        if (!isset($phone_active)) $phone_active = 0;
+        
+        // Get the old version
+        $sth = $this->pdo->prepare("SELECT * FROM users WHERE users.id = ?");
+        $sth->execute(array($_SESSION["user_id"]));
+        $res = $sth->fetch(PDO::FETCH_ASSOC);
+        $user = $res;
+        
+        $id = $_SESSION["user_id"];
+        
+        if (isset($this->pdo))
+        {
             if ($cur_password != "")
             {
                 if ($password == "" || $new_password == "")
@@ -100,18 +168,18 @@ class UserProcess
                             . "que le mot de passe dans le champ \"Nouveau mot de passe\".");
 
                 // Update password and all others information.
-                $sth = $this->pdo->prepare("UPDATE users SET username = ?, password = ?, email = ?, email_active = ?, phone = ?, phone_active = ? WHERE id = ?");
-                $res = $sth->execute(array($username, sha1password($new_password), $email, $email_active, $phone, $phone_active, $id));
+                $sth = $this->pdo->prepare("UPDATE users SET username = ?, email = ?, email_active = ?, phone = ?, phone_active = ? WHERE id = ?");
+                $res = $sth->execute(array($username, $email, $email_active, $phone, $phone_active, $id));
                 if ($res == 0)
                     throw new Exception("Impossible de modifier votre profil.");
                 
                 if ($_SESSION["user_id"] == -1)
                 {
                     // It's the root user, so let's edit the .ini file
-                    $cm = new ConfigManager();
+                    $cm = new ConfigManager(ADMIN_CONFIG_PATH);
                     $cm->loadINIFile();
                     $cm->setConfig("superadmin", "ac_superadmin_username", $username);
-                    $cm->setConfig("superadmin", "ac_superadmin_password", sha1password($new_password));
+                    $cm->setConfig("superadmin", "ac_superadmin_password", sha1($new_password));
                     $cm->setConfig("superadmin", "ac_superadmin_email", $email);
                     $cm->setConfig("superadmin", "ac_superadmin_email_active", $email_active);
                     $cm->setConfig("superadmin", "ac_superadmin_phone", $phone);
@@ -119,7 +187,7 @@ class UserProcess
                     $cm->saveINIFile();
                 }
 
-                $_SESSION["message"] = array("type" => "success", "title" => "Modification d'utilisateur terminé", "descr" => "L'utilisateur a été modifié. Le mot de passe a été modifié.");
+                $_SESSION["message"] = array("type" => "success", "title" => "Modification de votre profil terminé", "descr" => "Vos informations de profil a été modifié. Votre mot de passe a été modifié.");
                 header('Location: ' . '/monitoring/?v=profile');
             }
             else
@@ -133,10 +201,10 @@ class UserProcess
                 if ($_SESSION["user_id"] == -1)
                 {
                     // It's the root user, so let's edit the .ini file
-                    $cm = new ConfigManager();
+                    $cm = new ConfigManager(ADMIN_CONFIG_PATH);
                     $cm->loadINIFile();
                     $cm->setConfig("superadmin", "ac_superadmin_username", $username);
-                    $cm->setConfig("superadmin", "ac_superadmin_password", sha1password($new_password));
+                    $cm->setConfig("superadmin", "ac_superadmin_password", sha1($new_password));
                     $cm->setConfig("superadmin", "ac_superadmin_email", $email);
                     $cm->setConfig("superadmin", "ac_superadmin_email_active", $email_active);
                     $cm->setConfig("superadmin", "ac_superadmin_phone", $phone);
@@ -144,7 +212,7 @@ class UserProcess
                     $cm->saveINIFile();
                 }
 
-                $_SESSION["message"] = array("type" => "success", "title" => "Modification d'utilisateur terminé", "descr" => "L'utilisateur a été modifié. Le mot de passe n'a PAS été modifié.");
+                $_SESSION["message"] = array("type" => "success", "title" => "Modification de votre profil terminé", "descr" => "Vos informations de profil a été modifié. Votre mot de passe n'a PAS été modifié.");
                 header('Location: ' . '/monitoring/?v=profile');
             }
         }
@@ -166,65 +234,6 @@ class UserProcess
             $cm->saveINIFile();
             
             $_SESSION["message"] = array("type" => "success", "title" => "Modification d'utilisateur terminé", "descr" => "L'utilisateur a été modifié. Le mot de passe n'a PAS été modifié.");
-            header('Location: ' . '/monitoring/?v=profile');
-            
-        }
-    }
-    
-    function remove($id)
-    {
-        $sth = $this->pdo->prepare("REMOVE users WHERE id = ?");
-        $res = $sth->execute(array($id));
-        if ($res == 0)
-            throw new Exception("Impossible de supprimer cet utilisateur.");
-    }
-    
-    function editprofile($username, $email, $email_active, $phone, $phone_active, $cur_password, $password, $new_password)
-    {
-        if (!isset($email_active)) $email_active = 0;
-        if (!isset($phone_active)) $phone_active = 0;
-        
-        // Get the old version
-        $sth = $this->pdo->prepare("SELECT * FROM users WHERE users.id = ?");
-        $sth->execute(array($_SESSION["user_id"]));
-        $res = $sth->fetch(PDO::FETCH_ASSOC);
-        $user = $res;
-        
-        $id = $_SESSION["user_id"];
-        
-        if ($user["username"] != $username)
-        {
-            throw new Exception("Le changement de nom d'utilisateur est interdit. Contactez un administrateur pour réaliser un"
-                    . "changement de nom d'utilisateur.");
-        }
-        
-        if ($cur_password != "")
-        {
-            if ($password == "" || $new_password == "")
-                throw new Exception("Vous devez indiquer un nouveau mot de passe.");
-            
-            if ($password != $new_password)
-                throw new Exception("La vérification du mot de passe a échoué. Le mot de passe de confirmation doit être le même"
-                        . "que le mot de passe dans le champ \"Nouveau mot de passe\".");
-            
-            // Update password and all others information.
-            $sth = $this->pdo->prepare("UPDATE users SET username = ?, email = ?, email_active = ?, phone = ?, phone_active = ? WHERE id = ?");
-            $res = $sth->execute(array($username, $email, $email_active, $phone, $phone_active, $id));
-            if ($res == 0)
-                throw new Exception("Impossible de modifier votre profil.");
-            
-            $_SESSION["message"] = array("type" => "success", "title" => "Modification de votre profil terminé", "descr" => "Vos informations de profil a été modifié. Votre mot de passe a été modifié.");
-            header('Location: ' . '/monitoring/?v=profile');
-        }
-        else
-        {
-            // No need to change password, so let's go !
-            $sth = $this->pdo->prepare("UPDATE users SET username = ?, email = ?, email_active = ?, phone = ?, phone_active = ? WHERE id = ?");
-            $res = $sth->execute(array($username, $email, $email_active, $phone, $phone_active, $id));
-            if ($res == 0)
-                throw new Exception("Impossible de modifier votre profil.");
-            
-            $_SESSION["message"] = array("type" => "success", "title" => "Modification de votre profil terminé", "descr" => "Vos informations de profil a été modifié. Votre mot de passe n'a PAS été modifié.");
             header('Location: ' . '/monitoring/?v=profile');
         }
     }

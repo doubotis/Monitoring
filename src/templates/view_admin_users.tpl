@@ -1,3 +1,5 @@
+<h2 class="page-header">Liste des utilisateurs</h2>
+
 <div class="table-responsive">
     <table class="table table-striped">
         <thead>
@@ -24,9 +26,10 @@
                         <td>{{$c.phone}}</td>
                         <td></td>
                         <td>
-                            <a class="btn btn-sm btn-default" href=""><span class="fa fa-signal"></span></a> 
-                            <a class="btn btn-sm btn-primary" href=""><span class="fa fa-pencil-square-o"></span></a> 
-                            <a class="btn btn-sm btn-danger" href=""><span class="fa fa-trash-o"></span></a>
+                            <a class="btn btn-sm btn-default" href="?v=admin&tab=users&a=stat&id={{$c.id}}"><span class="fa fa-signal"></span></a> 
+                            <a class="btn btn-sm btn-default" href="?v=admin&tab=users&a=perm&id={{$c.id}}"><span class="fa fa-lock"></span></a> 
+                            <a class="btn btn-sm btn-primary" href="?v=admin&tab=users&a=edit&id={{$c.id}}"><span class="fa fa-pencil-square-o"></span></a> 
+                            <a class="btn btn-sm btn-danger" href="?v=admin&tab=users&a=delete&id={{$c.id}}"><span class="fa fa-trash-o"></span></a>
                         </td>
                     {{/if}}
                     
