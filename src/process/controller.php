@@ -27,7 +27,7 @@ class ControllerProcess
         $this->pdo = $pdo;
         $this->sm = new SecurityManager();
         $this->sm->denyAll();
-        $this->sm->allow(SECURITY_MANAGER_MASK_LOGGED);
+        $this->sm->allow(SecurityManager::SECURITY_MANAGER_MASK_LOGGED);
         $this->sm->checkSecurity();
         
         if (!isset($this->pdo))

@@ -46,6 +46,7 @@ class UserProcess
         if ($res == 0)
             throw new Exception("L'enregistrement a échoué.");
         
+        
         $_SESSION["message"] = array("type" => "success", "title" => "Enregistrement terminé", "descr" => "Votre compte a été crée.");
         header('Location: ' . '/monitoring/?v=dashboard');
     }
@@ -99,10 +100,24 @@ class UserProcess
                             . "que le mot de passe dans le champ \"Nouveau mot de passe\".");
 
                 // Update password and all others information.
-                $sth = $this->pdo->prepare("UPDATE users SET username = ?, email = ?, email_active = ?, phone = ?, phone_active = ? WHERE id = ?");
-                $res = $sth->execute(array($username, $email, $email_active, $phone, $phone_active, $id));
+                $sth = $this->pdo->prepare("UPDATE users SET username = ?, password = ?, email = ?, email_active = ?, phone = ?, phone_active = ? WHERE id = ?");
+                $res = $sth->execute(array($username, sha1password($new_password), $email, $email_active, $phone, $phone_active, $id));
                 if ($res == 0)
                     throw new Exception("Impossible de modifier votre profil.");
+                
+                if ($_SESSION["user_id"] == -1)
+                {
+                    // It's the root user, so let's edit the .ini file
+                    $cm = new ConfigManager();
+                    $cm->loadINIFile();
+                    $cm->setConfig("superadmin", "ac_superadmin_username", $username);
+                    $cm->setConfig("superadmin", "ac_superadmin_password", sha1password($new_password));
+                    $cm->setConfig("superadmin", "ac_superadmin_email", $email);
+                    $cm->setConfig("superadmin", "ac_superadmin_email_active", $email_active);
+                    $cm->setConfig("superadmin", "ac_superadmin_phone", $phone);
+                    $cm->setConfig("superadmin", "ac_superadmin_phone_active", $phone_active);
+                    $cm->saveINIFile();
+                }
 
                 $_SESSION["message"] = array("type" => "success", "title" => "Modification d'utilisateur terminé", "descr" => "L'utilisateur a été modifié. Le mot de passe a été modifié.");
                 header('Location: ' . '/monitoring/?v=profile');
@@ -114,6 +129,20 @@ class UserProcess
                 $res = $sth->execute(array($username, $email, $email_active, $phone, $phone_active, $id));
                 if ($res == 0)
                     throw new Exception("Impossible de modifier votre profil.");
+                
+                if ($_SESSION["user_id"] == -1)
+                {
+                    // It's the root user, so let's edit the .ini file
+                    $cm = new ConfigManager();
+                    $cm->loadINIFile();
+                    $cm->setConfig("superadmin", "ac_superadmin_username", $username);
+                    $cm->setConfig("superadmin", "ac_superadmin_password", sha1password($new_password));
+                    $cm->setConfig("superadmin", "ac_superadmin_email", $email);
+                    $cm->setConfig("superadmin", "ac_superadmin_email_active", $email_active);
+                    $cm->setConfig("superadmin", "ac_superadmin_phone", $phone);
+                    $cm->setConfig("superadmin", "ac_superadmin_phone_active", $phone_active);
+                    $cm->saveINIFile();
+                }
 
                 $_SESSION["message"] = array("type" => "success", "title" => "Modification d'utilisateur terminé", "descr" => "L'utilisateur a été modifié. Le mot de passe n'a PAS été modifié.");
                 header('Location: ' . '/monitoring/?v=profile');
@@ -125,6 +154,19 @@ class UserProcess
             if ($_SESSION["user_id"] != -1)
                 throw new Exception("Database not connected");
             
+            // It's the root user, so let's edit the .ini file
+            $cm = new ConfigManager();
+            $cm->loadINIFile();
+            $cm->setConfig("superadmin", "ac_superadmin_username", $username);
+            $cm->setConfig("superadmin", "ac_superadmin_password", sha1password($new_password));
+            $cm->setConfig("superadmin", "ac_superadmin_email", $email);
+            $cm->setConfig("superadmin", "ac_superadmin_email_active", $email_active);
+            $cm->setConfig("superadmin", "ac_superadmin_phone", $phone);
+            $cm->setConfig("superadmin", "ac_superadmin_phone_active", $phone_active);
+            $cm->saveINIFile();
+            
+            $_SESSION["message"] = array("type" => "success", "title" => "Modification d'utilisateur terminé", "descr" => "L'utilisateur a été modifié. Le mot de passe n'a PAS été modifié.");
+            header('Location: ' . '/monitoring/?v=profile');
             
         }
     }

@@ -65,8 +65,8 @@ class SecurityManager
     
     function allow($kind)
     {
-        $masks = array(SECURITY_MANAGER_MASK_LOGGED, SECURITY_MANAGER_MASK_BOT, SECURITY_MANAGER_MASK_ADMIN);
-        $kinds = array(SECURITY_MANAGER_VISITOR, SECURITY_MANAGER_MARKETING, SECURITY_MANAGER_CONTROLLER, SECURITY_MANAGER_ADMIN, SECURITY_MANAGER_SUPERADMIN);
+        $masks = array(SecurityManager::SECURITY_MANAGER_MASK_LOGGED, SecurityManager::SECURITY_MANAGER_MASK_BOT, SecurityManager::SECURITY_MANAGER_MASK_ADMIN);
+        $kinds = array(SecurityManager::SECURITY_MANAGER_VISITOR, SecurityManager::SECURITY_MANAGER_MARKETING, SecurityManager::SECURITY_MANAGER_CONTROLLER, SecurityManager::SECURITY_MANAGER_ADMIN, SecurityManager::SECURITY_MANAGER_SUPERADMIN);
         
         if (!in_array($kind, $masks) && !in_array($kind, $kinds))
             throw new Exception("Not an authorized value");
@@ -97,6 +97,7 @@ class SecurityManager
         if (in_array(SecurityManager::SECURITY_MANAGER_VISITOR, $this->allowed))
             return true;        // All is authorized
         
+        $isSuperAdmin = false;
         $isAdmin = false;
         
         try
@@ -107,13 +108,22 @@ class SecurityManager
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 
-            $sth = $pdo->prepare("SELECT * FROM users WHERE id = ? AND rights LIKE 'superadmin'");
+            if (isset($_SESSION["user_id"]) && $_SESSION["user_id"] == -1)
+            {
+                $isSuperAdmin = true;
+                $isAdmin = true;
+            }
+            
+            $sth = $pdo->prepare("SELECT * FROM users WHERE id = ? AND rights LIKE 'admin'");
             $sth->execute(array($_SESSION["user_id"]));
             $res = $sth->fetchAll();
             if (count($res) > 0)
                 $isAdmin = true;
 
             if (in_array(SecurityManager::SECURITY_MANAGER_MASK_ADMIN, $this->allowed) && $isAdmin == true)
+                    return true;
+            
+            if (in_array(SecurityManager::SECURITY_MANAGER_SUPERADMIN, $this->allowed) && $isSuperAdmin == true)
                     return true;
 
             if (in_array(SecurityManager::SECURITY_MANAGER_MASK_BOT, $this->allowed) && __isCrawler($_SERVER['HTTP_USER_AGENT']))
@@ -127,7 +137,7 @@ class SecurityManager
         catch (Exception $e)
         {
             // If the database could not be accessed test if this is the superadmin.
-            if ($_SESSION["username"] == AC_SUPERADMIN_USERNAME)
+            if ($_SESSION["user_id"] == -1)
                 return true;
             else
                 return false;

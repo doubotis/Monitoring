@@ -27,7 +27,7 @@ class AdminController {
         $this->pdo = $pdo;
         $this->sm = new SecurityManager();
         $this->sm->denyAll();
-        $this->sm->allow(SECURITY_MANAGER_MASK_ADMIN);
+        $this->sm->allow(SecurityManager::SECURITY_MANAGER_MASK_ADMIN);
         $this->sm->checkSecurityAccess();
     }
     
@@ -36,10 +36,17 @@ class AdminController {
         $tab = isset($_REQUEST["tab"]) ? $_REQUEST["tab"] : "users";
         $tpl->assign('tab', $tab);
         
+        if (!isset($this->pdo))
+            throw new Exception("Database not connected");
+        
         switch ($tab)
         {
+            case 'users':
+                $this->__assignTabUsers($tpl);
+                $tpl->display('controller_admin.tpl');
+                break;
             case 'config':
-                $this->assignTabConfig($tpl);
+                $this->__assignTabConfig($tpl);
                 $tpl->display('controller_admin.tpl');
                 break;
             default:
@@ -49,7 +56,17 @@ class AdminController {
         }
     }
     
-    function assignTabConfig($tpl)
+    private function __assignTabUsers($tpl)
+    {
+        $sth = $this->pdo->prepare("SELECT * FROM users ORDER BY id ASC");
+        $sth->execute();
+        $res = $sth->fetchAll();
+        
+        $tpl->assign('users_data', $res);
+        $tpl->assign('view', 'view_admin_users');
+    }
+    
+    private function __assignTabConfig($tpl)
     {
         // Build an array for the config.
         $control = array(   "host" => DB_HOST,

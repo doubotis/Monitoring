@@ -87,10 +87,12 @@ class ActionScript
                 case ACTION_LOGIN:
                     $as = new AuthProcess($this->pdo);
                     $as->login($request["u"], $request["p"]);
+                    exit(0);
                     break;
                 case ACTION_LOGOUT:
                     $as = new AuthProcess($this->pdo);
                     $as->logout();
+                    exit(0);
                     break;
                 case ACTION_CONTROLLER_ADD:
                     $cp = new ControllerProcess($this->pdo);
@@ -124,26 +126,31 @@ class ActionScript
                     $up->editprofile($request["username"], $request["email"], $request["email-active"], 
                             $request["phone"], $request["phone-active"], $request["current-password"], 
                             $request["new-password"], $request["retape-password"]);
+                    exit(0);
                     break;
                 case ACTION_USER_ADD:
                     $up = new UserProcess($this->pdo);
                     $up->add($request["id"], $request["username"], $request["email"], $request["email-active"], 
                             $request["phone"], $request["phone-active"], $request["password"]);
+                    exit(0);
                     break;
                 case ACTION_USER_EDIT:
                     $up = new UserProcess($this->pdo);
                     $up->edit($request["id"], $request["username"], $request["email"], $request["email-active"], 
                             $request["phone"], $request["phone-active"], $request["current-password"], 
                             $request["new-password"], $request["retape-password"]);
+                    exit(0);
                     break;
                 case ACTION_USER_REMOVE:
                     $up = new UserProcess($this->pdo);
                     $up->remove($request["id"]);
+                    exit(0);
                     break;
                 case ACTION_ADMIN_CONFIG:
                     $ac = new AdminProcess($this->pdo);
                     $ac->setup($request["db-host"], $request["db-username"], $request["db-password"], $request["db-name"], 
                             $request["control-threads"], $request["control-interval"]);
+                    exit(0);
                     break;
                 case ACTION_NONE:
                 default:
