@@ -81,40 +81,51 @@ class UserProcess
         if (!isset($email_active)) $email_active = 0;
         if (!isset($phone_active)) $phone_active = 0;
         
-        // Get the old version
-        $sth = $this->pdo->prepare("SELECT * FROM users WHERE users.id = ?");
-        $sth->execute(array($id));
-        $res = $sth->fetch(PDO::FETCH_ASSOC);
-        $user = $res;
-        
-        if ($cur_password != "")
+        if (isset($this->pdo))
         {
-            if ($password == "" || $new_password == "")
-                throw new Exception("Vous devez indiquer un nouveau mot de passe.");
-            
-            if ($password != $new_password)
-                throw new Exception("La vérification du mot de passe a échoué. Le mot de passe de confirmation doit être le même"
-                        . "que le mot de passe dans le champ \"Nouveau mot de passe\".");
-            
-            // Update password and all others information.
-            $sth = $this->pdo->prepare("UPDATE users SET username = ?, email = ?, email_active = ?, phone = ?, phone_active = ? WHERE id = ?");
-            $res = $sth->execute(array($username, $email, $email_active, $phone, $phone_active, $id));
-            if ($res == 0)
-                throw new Exception("Impossible de modifier votre profil.");
-            
-            $_SESSION["message"] = array("type" => "success", "title" => "Modification d'utilisateur terminé", "descr" => "L'utilisateur a été modifié. Le mot de passe a été modifié.");
-            header('Location: ' . '/monitoring/?v=profile');
+            // Get the old version
+            $sth = $this->pdo->prepare("SELECT * FROM users WHERE users.id = ?");
+            $sth->execute(array($id));
+            $res = $sth->fetch(PDO::FETCH_ASSOC);
+            $user = $res;
+
+            if ($cur_password != "")
+            {
+                if ($password == "" || $new_password == "")
+                    throw new Exception("Vous devez indiquer un nouveau mot de passe.");
+
+                if ($password != $new_password)
+                    throw new Exception("La vérification du mot de passe a échoué. Le mot de passe de confirmation doit être le même"
+                            . "que le mot de passe dans le champ \"Nouveau mot de passe\".");
+
+                // Update password and all others information.
+                $sth = $this->pdo->prepare("UPDATE users SET username = ?, email = ?, email_active = ?, phone = ?, phone_active = ? WHERE id = ?");
+                $res = $sth->execute(array($username, $email, $email_active, $phone, $phone_active, $id));
+                if ($res == 0)
+                    throw new Exception("Impossible de modifier votre profil.");
+
+                $_SESSION["message"] = array("type" => "success", "title" => "Modification d'utilisateur terminé", "descr" => "L'utilisateur a été modifié. Le mot de passe a été modifié.");
+                header('Location: ' . '/monitoring/?v=profile');
+            }
+            else
+            {
+                // No need to change password, so let's go !
+                $sth = $this->pdo->prepare("UPDATE users SET username = ?, email = ?, email_active = ?, phone = ?, phone_active = ? WHERE id = ?");
+                $res = $sth->execute(array($username, $email, $email_active, $phone, $phone_active, $id));
+                if ($res == 0)
+                    throw new Exception("Impossible de modifier votre profil.");
+
+                $_SESSION["message"] = array("type" => "success", "title" => "Modification d'utilisateur terminé", "descr" => "L'utilisateur a été modifié. Le mot de passe n'a PAS été modifié.");
+                header('Location: ' . '/monitoring/?v=profile');
+            }
         }
         else
         {
-            // No need to change password, so let's go !
-            $sth = $this->pdo->prepare("UPDATE users SET username = ?, email = ?, email_active = ?, phone = ?, phone_active = ? WHERE id = ?");
-            $res = $sth->execute(array($username, $email, $email_active, $phone, $phone_active, $id));
-            if ($res == 0)
-                throw new Exception("Impossible de modifier votre profil.");
+            // Database not connected. Only for SuperAdmin.
+            if ($_SESSION["user_id"] != -1)
+                throw new Exception("Database not connected");
             
-            $_SESSION["message"] = array("type" => "success", "title" => "Modification d'utilisateur terminé", "descr" => "L'utilisateur a été modifié. Le mot de passe n'a PAS été modifié.");
-            header('Location: ' . '/monitoring/?v=profile');
+            
         }
     }
     

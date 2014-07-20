@@ -42,7 +42,7 @@ class AuthProcess
                 $_SESSION["message"] = array("type" => "success", "title" => "Connexion terminée", "descr" => "Vous êtes maintenant connecté");
                 $_SESSION["connected"] = true;
                 $_SESSION["username"] = AC_SUPERADMIN_USERNAME;
-                $_SESSION["user_id"] = 0;
+                $_SESSION["user_id"] = -1;
                 header('Location: ' . '/monitoring/?v=admin&tab=config');
                 exit(0);
             }

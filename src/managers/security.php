@@ -17,16 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-define('SECURITY_MANAGER_MASK_LOGGED', 2000);
-define('SECURITY_MANAGER_MASK_BOT', 2001);
-define('SECURITY_MANAGER_MASK_ADMIN', 2002);
-
-define('SECURITY_MANAGER_VISITOR', 1000);
-define('SECURITY_MANAGER_MARKETING', 1001);
-define('SECURITY_MANAGER_CONTROLLER', 1002);
-define('SECURITY_MANAGER_ADMIN', 1003);
-define('SECURITY_MANAGER_SUPERADMIN', 1004);
-
 class SecurityManager
 {
     // Constantes
@@ -46,7 +36,7 @@ class SecurityManager
     
     function __construct()
     {
-        
+        $this->__syncSuperAdminIfNeeded();
     }
     
     function denyAll()
@@ -93,18 +83,18 @@ class SecurityManager
     function checkSecurityAccess()
     {
         if (!$this->isAuthorized())
-            throw new SecurityAccessException("Forbiden Access");
+            throw new SecurityAccessException("Accès interdit");
     }
     
     function checkSecurity()
     {
         if (!$this->isAuthorized())
-            throw new SecurityException("Forbiden Request");
+            throw new SecurityException("Accès interdit");
     }
     
     function isAuthorized()
     {
-        if (in_array(SECURITY_MANAGER_VISITOR, $this->allowed))
+        if (in_array(SecurityManager::SECURITY_MANAGER_VISITOR, $this->allowed))
             return true;        // All is authorized
         
         $isAdmin = false;
@@ -113,23 +103,23 @@ class SecurityManager
         {
             // Get user id
             $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_AUTH_DBNAME . "";
-            $pdo =  new PDO($dsn,DB_AUTH_USERNAME, DB_AUTH_PASSWORD);
+            $pdo =  new PDO($dsn, DB_AUTH_USERNAME, DB_AUTH_PASSWORD);
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 
-            $sth = $pdo->prepare("SELECT * FROM users WHERE id = ? AND rights LIKE 'admin'");
+            $sth = $pdo->prepare("SELECT * FROM users WHERE id = ? AND rights LIKE 'superadmin'");
             $sth->execute(array($_SESSION["user_id"]));
             $res = $sth->fetchAll();
             if (count($res) > 0)
                 $isAdmin = true;
 
-            if (in_array(SECURITY_MANAGER_MASK_ADMIN, $this->allowed) && $isAdmin == true)
+            if (in_array(SecurityManager::SECURITY_MANAGER_MASK_ADMIN, $this->allowed) && $isAdmin == true)
                     return true;
 
-            if (in_array(SECURITY_MANAGER_MASK_BOT, $this->allowed) && isCrawler($_SERVER['HTTP_USER_AGENT']))
+            if (in_array(SecurityManager::SECURITY_MANAGER_MASK_BOT, $this->allowed) && __isCrawler($_SERVER['HTTP_USER_AGENT']))
                 return true;
 
-            if (in_array(SECURITY_MANAGER_MASK_LOGGED, $this->allowed) && isset($_SESSION["connected"]))
+            if (in_array(SecurityManager::SECURITY_MANAGER_MASK_LOGGED, $this->allowed) && isset($_SESSION["connected"]))
                 return true;
 
             return false;
@@ -144,7 +134,7 @@ class SecurityManager
         }
     }
     
-    function isCrawler($USER_AGENT)
+    private function __isCrawler($USER_AGENT)
     {
         $crawlers = array(
         'Google' => 'Google',
@@ -179,6 +169,32 @@ class SecurityManager
         else
         {
             return true;
+        }
+    }
+    
+    private function __syncSuperAdminIfNeeded()
+    {
+        if (!isset($_SESSION["user_id"]) || $_SESSION["user_id"] != -1)
+            return;
+        
+        try
+        {
+            $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_AUTH_DBNAME . "";
+            $pdo =  new PDO($dsn, DB_AUTH_USERNAME, DB_AUTH_PASSWORD);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+
+            $sth = $pdo->prepare("UPDATE users SET username = ?, password = ?, email = ?, email_active = ?, phone = ?, phone_active = ? WHERE id = -1");
+            $res = $sth->execute(array(AC_SUPERADMIN_USERNAME, AC_SUPERADMIN_PASSWORD, 
+                AC_SUPERADMIN_EMAIL, AC_SUPERADMIN_EMAIL_ACTIVE, 
+                AC_SUPERADMIN_PHONE, AC_SUPERADMIN_PHONE_ACTIVE));
+            if ($res == 0)
+                throw new Exception("Unable to sync the SuperAdmin user with the database.");
+            
+        }
+        catch (Exception $e)
+        {
+            Log::getLogger()->write(Log::LOG_ERROR, "Unable to sync the SuperAdmin user with the database.", $e);
         }
     }
 }
