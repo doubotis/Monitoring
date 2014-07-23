@@ -42,6 +42,13 @@ define('ACTION_ROLE_ADD', 'addrole');
 define('ACTION_ROLE_EDIT', 'editrole');
 define('ACTION_ROLE_REMOVE', 'removerole');
 
+define('ACTION_PROJECT_ADD', 'addproject');
+define('ACTION_PROJECT_EDIT', 'editproject');
+define('ACTION_PROJECT_REMOVE', 'removeproject');
+
+define('ACTION_USERROLE_ADD', 'adduserrole');
+define('ACTION_USERROLE_DELETE', 'removeuserrole');
+
 define('ACTION_ADMIN_CONFIG', 'adminconfig');
 
 define('ACTION_NONE', 'nothing');
@@ -169,6 +176,31 @@ class ActionScript
                     $rp = new RoleProcess($this-pdo);
                     $others = $this->__preparePermissions($request);
                     $rp->remove($request["id"], $request["next_role_id"]);
+                    exit(0);
+                    break;
+                case ACTION_PROJECT_ADD:
+                    $pp = new ProjectProcess($this->pdo);
+                    $pp->add($request["name"], $request["locked"], $request["visible"]);
+                    exit(0);
+                    break;
+                case ACTION_PROJECT_EDIT:
+                    $pp = new ProjectProcess($this->pdo);
+                    $pp->edit($request["id"], $request["name"], $request["locked"], $request["visible"]);
+                    exit(0);
+                    break;
+                case ACTION_PROJECT_REMOVE:
+                    $pp = new ProjectProcess($this->pdo);
+                    $pp->remove($request["id"]);
+                    exit(0);
+                    break;
+                case ACTION_USERROLE_ADD:
+                    $up = new UserProcess($this->pdo);
+                    $up->addrole($request["userid"], $request["proj"], $request["selector-role"]);
+                    exit(0);
+                    break;
+                case ACTION_USERROLE_DELETE:
+                    $up = new UserProcess($this->pdo);
+                    $up->removerole($request["user_id"], $request["proj"], $request["role_id"]);
                     exit(0);
                     break;
                 case ACTION_ADMIN_CONFIG:

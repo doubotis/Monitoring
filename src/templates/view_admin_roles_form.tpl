@@ -1,4 +1,4 @@
-<h2 class="page-header">Modifier Rôle</h2>
+<h2 class="page-header">Ajouter/Modifier Rôle</h2>
 
 <form class="form-horizontal form-limited" method="post" action="action.php?a={{if $action eq "add"}}addrole{{else}}editrole{{/if}}">
     <input type="hidden" name="id" value="{{$role.id}}" />

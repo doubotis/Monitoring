@@ -45,6 +45,7 @@ require_once('process/alert.php');
 require_once('process/user.php');
 require_once('process/admin.php');
 require_once('process/role.php');
+require_once('process/project.php');
 
 require_once('data/historic.php');
 require_once('data/permission.php');

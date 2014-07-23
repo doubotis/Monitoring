@@ -237,4 +237,28 @@ class UserProcess
             header('Location: ' . '/monitoring/?v=profile');
         }
     }
+    
+    function addrole($userid, $projid, $roleid)
+    {
+        $sth = $this->pdo->prepare("INSERT INTO users_roles (user_id, role_id, project_id) VALUES (?, ?, ?)");
+        $res = $sth->execute(array($userid, $roleid, $projid));
+        if ($res == 0)
+            throw new Exception("Impossible de modifier les permissions.");
+        
+        $_SESSION["message"] = array("type" => "success", "title" => "Modification d'utilisateur terminé", "descr" => "Le rôle a été ajouté pour cet utilisateur.");
+        header('Location: ' . '/monitoring/?v=admin&tab=users&a=perm&id=' . $userid . '&proj=' . $projid);
+        exit(0);
+    }
+    
+    function removerole($userid, $projid, $roleid)
+    {
+        $sth = $this->pdo->prepare("DELETE FROM users_roles WHERE user_id = ? AND role_id = ? AND project_id = ?");
+        $res = $sth->execute(array($userid, $roleid, $projid));
+        if ($res == 0)
+            throw new Exception("Impossible de modifier les permissions.");
+        
+        $_SESSION["message"] = array("type" => "success", "title" => "Modification d'utilisateur terminé", "descr" => "Le rôle a été supprimé pour cet utilisateur.");
+        header('Location: ' . '/monitoring/?v=admin&tab=users&a=perm&id=' . $userid . '&proj=' . $projid);
+        exit(0);
+    }
 }

@@ -49,6 +49,10 @@ class AdminController {
                 $this->__assignTabRoles($tpl);
                 $tpl->display('controller_admin.tpl');
                 break;
+            case 'projects':
+                $this->__assignTabProjects($tpl);
+                $tpl->display('controller_admin.tpl');
+                break;
             case 'config':
                 $this->__assignTabConfig($tpl);
                 $tpl->display('controller_admin.tpl');
@@ -87,8 +91,26 @@ class AdminController {
             $sth = $this->pdo->prepare("SELECT * FROM users WHERE id = ?");
             $sth->execute(array($_REQUEST["id"]));
             $res = $sth->fetch(PDO::FETCH_ASSOC);
-
             $tpl->assign('user', $res);
+            
+            $sth = $this->pdo->prepare("SELECT * FROM roles INNER JOIN users_roles ON (roles.id = users_roles.role_id) WHERE users_roles.user_id = ? AND project_id = ?");
+            $sth->execute(array($_REQUEST["id"], $_REQUEST["proj"]));
+            $res = $sth->fetchAll();
+            $tpl->assign('user_roles_data', $res);
+            
+            $sth = $this->pdo->prepare("SELECT * FROM roles ORDER BY name ASC");
+            $sth->execute();
+            $res = $sth->fetchAll();
+            $tpl->assign('roles_data', $res);
+            
+            $sth = $this->pdo->prepare("SELECT * FROM projects ORDER BY name ASC");
+            $sth->execute();
+            $res = $sth->fetchAll();
+            $tpl->assign('projects_data', $res);
+            
+            $proj = isset($_REQUEST["proj"]) ? $_REQUEST["proj"] : "all";
+            $tpl->assign('projectid', $proj);
+            
             $tpl->assign('view', 'view_admin_users_perm');
         }
         else
@@ -99,6 +121,38 @@ class AdminController {
 
             $tpl->assign('user', $res);
             $tpl->assign('view', 'view_admin_users_form');
+        }
+    }
+    
+    private function __assignTabProjects($tpl)
+    {
+        $action = isset($_REQUEST["a"]) ? $_REQUEST["a"] : "list";
+        $tpl->assign('action', $action);
+        
+        if ($action == "list")
+        {
+            $sth = $this->pdo->prepare("SELECT *, (SELECT COUNT(*) FROM users_roles c WHERE projects.id = c.project_id) AS userCount FROM projects ORDER BY id ASC");
+            $sth->execute();
+            $res = $sth->fetchAll();
+
+            $tpl->assign('projects_data', $res);
+            $tpl->assign('view', 'view_admin_projects');
+        }
+        else if ($action == "edit")
+        {
+            $sth = $this->pdo->prepare("SELECT * FROM projects WHERE id = ?");
+            $sth->execute(array($_REQUEST["id"]));
+            $res = $sth->fetch(PDO::FETCH_ASSOC);
+
+            $tpl->assign('project', $res);
+            $tpl->assign('view', 'view_admin_projects_form');
+        }
+        else if ($action == "add")
+        {
+            $proj = array("id" => 0, "name" => "", "locked" => 0, "visible" => 1);
+            
+            $tpl->assign('project', $proj);
+            $tpl->assign('view', 'view_admin_projects_form');
         }
     }
     

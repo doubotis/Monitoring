@@ -12,9 +12,11 @@
                               Tous les projets <span class="caret" style="float: right; position: relative; top: 10px;"></span>
                             </button>
                             <ul class="dropdown-menu" role="menu" style="left: 10px; right: 10px;">
-                                <li><a href="">Tous les projets</a></li>
+                                <li><a href="?v=dashboard&proj=all">Tous les projets</a></li>
                                 <li class="divider"></li>
-                                <li><a href="">Demo</a></li>
+                                {{foreach from=$projects_data item=p}}
+                                    <li><a href="?v=dashboard&proj={{$p.id}}">{{$p.name}}</a></li>
+                                {{/foreach}}
                             </ul>
                         </div>
                   </li>

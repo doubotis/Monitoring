@@ -39,6 +39,11 @@ class DashboardController {
         if (!isset($this->pdo))
             throw new Exception("Database not connected");
         
+        $sth = $this->pdo->prepare("SELECT * FROM projects WHERE visible = 1 ORDER BY name ASC");
+        $sth->execute();
+        $res = $sth->fetchAll();
+        $tpl->assign('projects_data', $res);
+        
         switch ($category)
         {
             

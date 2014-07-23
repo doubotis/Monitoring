@@ -1,4 +1,4 @@
-<h2 class="page-header">Modifier Utilisateur</h2>
+<h2 class="page-header">Modifier l'utilisateur {{$user.username}}</h2>
 
 <form class="form-horizontal form-limited" method="post" action="action.php?a=edituser">
     <input type="hidden" name="id" value="{{$user.id}}" />

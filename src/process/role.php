@@ -58,7 +58,7 @@ class RoleProcess
         if ($res == 0)
             throw new Exception("Impossible de modifier ce rôle.");
         
-        $sth = $this->pdo->prepare("DELETE roles_permissions WHERE role_id = ?");
+        $sth = $this->pdo->prepare("DELETE FROM roles_permissions WHERE role_id = ?");
         $res = $sth->execute(array($id));
         if ($res == 0)
             throw new Exception("Impossible de modifier ce rôle.");
@@ -87,7 +87,7 @@ class RoleProcess
         }
         else
         {
-            $sth = $this->pdo->prepare("REMOVE users_roles WHERE role_id = ?");
+            $sth = $this->pdo->prepare("DELETE FROM users_roles WHERE role_id = ?");
             $res = $sth->execute(array($id));
             if ($res == 0)
                 throw new Exception("Impossible de supprimer ce rôle.");
