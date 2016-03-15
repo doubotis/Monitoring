@@ -59,3 +59,4 @@ If the database is not available, the processes will trigger an alert and will s
 
 Just put the complete GitHub project on your server in /var/www/ then browse to see the install page. Follow the instructions to install greatfully the Monitoring system.
 
+#### Project paused, sorry :(
